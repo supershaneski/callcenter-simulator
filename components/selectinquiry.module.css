@@ -1,0 +1,33 @@
+.container {
+    position: relative;
+    height: 100vh;
+}
+
+.header {
+    position: relative;
+    height: 50px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.main {
+    position: relative;
+    height: calc(100% - 50px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    display: flex;
+    justify-content: center;
+}
+
+.buttons {
+    position: relative;
+    width: calc(100% - 4rem);
+}

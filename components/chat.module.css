@@ -1,0 +1,80 @@
+.container {
+    background-color: #f5f5f5;
+    position: relative;
+    height: 100vh;
+}
+
+.header {
+    /*box-shadow: rgba(50, 50, 93, 0.125) 0px 12px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px;*/
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+    background-color: #fff;
+    position: relative;
+    height: 75px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main {
+    position: relative;
+    height: calc(100% - 75px);
+    overflow-y: auto;
+}
+
+.input {
+    /*box-shadow: rgba(50, 50, 93, 0.125) 0px 12px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px;*/
+    /*box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;*/
+    /*background-color: #fff;*/
+    background-color: #fff9;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+.inputText {
+    position: relative;
+    margin: 1rem;
+}
+
+.banner {
+    margin-left: 1rem;
+    width: calc(100% - 60px);
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.bannerTitle {
+    font-weight: 500;
+    font-size: 1.3rem;
+}
+
+.contents {
+    position: relative;
+    margin: 1rem 1rem 6rem 1rem;
+}
+.contentItem {
+    margin-bottom: 1rem;
+}
+.contentItem:last-child {
+    margin-bottom: 0;
+}
+.endText {
+    margin: 0;
+    text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+
+    .container {
+        background-color: #000;
+    }
+
+    .header {
+        background-color: #333;
+    }
+
+    .input {
+        background-color: #0009;
+    }
+
+}

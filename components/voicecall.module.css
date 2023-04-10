@@ -1,0 +1,72 @@
+.container {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+}
+
+.banner {
+    /*background-color: magenta;*/
+    position: relative;
+    height: 100px; /*150*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.mode {
+    /*background-color: blue;*/
+    position: relative;
+    height: 200px; /*150*/
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+}
+.action {
+    position: relative;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cancel {
+    position: relative;
+    width: calc(100% - 4rem);
+}
+
+.avatar {
+    border: 1px solid #999;
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    border: 1px solid #999;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.voiceStatus {
+    position: relative;
+    width: 60px;
+    height: 20px;
+}

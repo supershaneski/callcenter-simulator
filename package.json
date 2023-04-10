@@ -1,0 +1,38 @@
+{
+  "name": "callcenter-simulator",
+  "version": "0.0.1",
+  "description": "A sample CallCenter Simulator app",
+  "scripts": {
+    "dev": "next dev -p 3005",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6",
+    "@fontsource/roboto": "^4.5.8",
+    "@mui/icons-material": "^5.11.11",
+    "@mui/lab": "^5.0.0-alpha.124",
+    "@mui/material": "^5.11.15",
+    "eslint-config-next": "^13.2.4",
+    "lodash": "^4.17.21",
+    "next": "^13.2.4",
+    "openai": "^3.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zustand": "^4.3.7"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.0.0",
+    "@storybook/addon-interactions": "^7.0.0",
+    "@storybook/addon-links": "^7.0.0",
+    "@storybook/blocks": "^7.0.0",
+    "@storybook/nextjs": "^7.0.0",
+    "@storybook/react": "^7.0.0",
+    "@storybook/testing-library": "^0.0.14-next.2",
+    "storybook": "^7.0.0"
+  }
+}

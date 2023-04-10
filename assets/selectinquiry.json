@@ -1,0 +1,5 @@
+{
+    "order-inquiry": ["Order Inquiry", "注文に関するお問い合わせ"],
+    "product-inquiry": ["Product Inquiry", "製品に関するお問い合わせ"],
+    "others": ["Other Inquiry", "その他お問い合わせ"]
+}

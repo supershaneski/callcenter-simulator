@@ -1,0 +1,112 @@
+.container {
+    position: relative;
+}
+
+.panel {
+    /*background-color: #dec;*/
+    position: relative;
+    width: 100%;
+    margin-bottom: 1rem;
+    box-sizing: border-box;
+}
+.panel:last-child {
+    margin-bottom: 0;
+}
+
+.error {
+    color: #E74C3C;
+    margin-left: 1rem;
+}
+
+.form {
+    /*background-color: pink;*/
+    margin-top: 1rem;
+}
+
+.item {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+.fieldsName {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: normal;
+    margin-bottom: 1rem;
+}
+
+.order {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.orderItem {
+    /*width: calc(100% - 310px);*/
+    width: calc(100% - 400px);
+}
+.orderItem2 {
+    width: 80px;
+}
+.orderItem3 {
+    width: 100px;
+    text-align: center;
+}
+.orderItem4 {
+    width: 50px;
+    text-align: right;
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.table .tabHead, .table .tabCell {
+    border: 1px solid var(--color-border);
+    padding: 10px 1rem;
+}
+
+.table .tabHead {
+    font-size: .8rem;
+}
+
+.table .tabCell {
+    font-size: .9rem;
+}
+
+.table .tabBody .tabRow:hover {
+    background-color: rgba(200,255,220, 0.125);
+}
+
+.left {
+    text-align: left;
+}
+.right {
+    text-align: right;
+}
+.center {
+    text-align: center;
+}
+
+.preview {
+    margin-top: 2rem;
+    position: relative;
+    border-top: 1px dotted var(--color-border);
+    padding-top: 1rem;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+.close {
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

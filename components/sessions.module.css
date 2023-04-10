@@ -1,0 +1,107 @@
+.container {
+    /*background-color: #224;*/
+    position: relative;
+}
+
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.table th.tabHead, .table td.tabCell {
+    border: 1px solid var(--color-border);
+    padding: 5px 1rem;
+}
+.table th.tabHead {
+    font-size: .8rem;
+}
+.table td.tabCell {
+    font-size: .8rem;
+    /*font-weight: 500;*/
+}
+
+.table tbody tr.tabRow {
+    cursor: pointer;
+}
+
+.table tbody tr.tabRow:hover {
+    background-color: rgba(200,255,220, 0.125);
+}
+
+.main {
+    border-bottom: 1px solid var(--color-border);
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 50vh;
+}
+.main .table {
+    overflow-y: auto;
+}
+.main .table thead {
+    border-bottom: 1px solid var(--color-border);
+}
+.main .table thead th.tabHead {
+    position: sticky;
+    top: 0;
+}
+
+.right {
+    text-align: right;
+}
+.center {
+    text-align: center;
+}
+.empty {
+    padding: 3rem 0 !important;
+}
+
+.summary {
+    display: -webkit-box;
+    max-width: 45vw; /*200px*/
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.preview {
+    margin-top: 2rem;
+    position: relative;
+    border-top: 1px dotted var(--color-border);
+    padding-top: 1rem;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+.close {
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+    width: 1.75rem;
+    height: 1.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tableData {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+/*
+@media (prefers-color-scheme: dark) {
+
+    .main .table thead th {
+        background-color: #333;
+    }
+
+    .table td {
+        background-color: transparent;
+    }
+    
+
+}
+*/

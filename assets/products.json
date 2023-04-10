@@ -1,0 +1,20 @@
+{
+    "items": [
+        { "id": "ZU7922", "name": "2人掛椅子ロング ZU7922 Oak", "price": 24510 },
+        { "id": "ZU79C2", "name": "2人掛椅子ロング ZU79C2 Pine", "price": 24510 },
+
+        { "id": "ZU7903", "name": "長椅子 Ash ZU7903", "price": 36670 },
+        { "id": "ZU79A3", "name": "長椅子 Oak ZU79A3", "price": 36670 },
+
+        { "id": "ZU4618", "name": "右肘2人掛椅子 Maple ZU4618", "price": 45500 },
+        { "id": "UU4618", "name": "右肘2人掛椅子 Oak UU4618", "price": 45500 },
+
+        { "id": "ZU4813", "name": "長椅子ロング Oak ZU4813", "price": 33900 },
+        { "id": "UU4813", "name": "長椅子ロング Pine UU4813", "price": 33900 },
+
+        { "id": "RU7221", "name": "リクライナー M Bamboo RU7221", "price": 25800 },
+        { "id": "RU7201", "name": "リクライナー M Rattan RU7201", "price": 25800 },
+
+        { "id": "QT90EF", "name": "キャビネット（ガラス扉） Aluminum QT90EF", "price": 39720 }
+    ]
+}

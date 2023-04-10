@@ -1,0 +1,41 @@
+{
+    "settings": ["設定", "Settings", "設定"],
+    "data-source": ["情報元", "Data Source", "情報元"],
+    "orders": ["注文", "Orders", "注文"],
+    "sessions": ["セッション", "Sessions", "セッション"],
+    "add-data-source": ["情報元の追加", "Add Data Source", "情報元の追加"],
+    "filename": ["ファイル名", "Filename", "ファイル名"],
+    "last-modify": ["最終更新日", "Last Modified", "最終更新日"],
+    "file-type": ["種類", "Type", "種類"],
+    "file-size": ["サイズ (KiB)", "Size (KiB)", "サイズ (KiB)"],
+    "action": ["作用", "Action", "作用"],
+    "max-file-error": ["洗濯したファイルが多すぎます", "Too many files selected", "洗濯したファイルが多すぎます"],
+    "no-files": ["ファイルが見つかりません", "No files found", "ファイルが見つかりません"],
+
+    "session-id": ["セッションID", "session id", "セッションID"],
+    "datetime": ["日付時刻", "datetime", "日付時刻"],
+    "inquiry": ["お問い合わせ", "inquiry", "お問い合わせ"],
+    "mode": ["モード", "mode", "モード"],
+    "summary": ["要約", "summary", "要約"],
+
+    "rating": ["評価", "rating", "評価"],
+
+    "customer": ["お客様", "Customer", "お客様"],
+    "system": ["チャットボット", "System", "チャットボット"],
+
+    "chat": ["チャット", "Chat", "チャット"],
+    "voice": ["音声電話", "Voice Call", "音声電話"],
+
+    "neutral": ["中立的", "Neutral", "中立的"],
+    "negative": ["否定的", "Negative", "否定的"],
+    "positive": ["肯定的", "Positive", "肯定的"],
+
+    "role": ["役割", "role", "役割"],
+    "sentiment": ["感情", "sentiment", "感情"],
+    "no-session": ["セッションが見つかりません", "No sessions", "ファイルがセッション"],
+
+    "order-inquiry": ["注文", "Order Inquiry", "注文に関するお問い合わせ"],
+    "product-inquiry": ["製品", "Product Inquiry", "製品に関するお問い合わせ"],
+    "others": ["その他", "Other Inquiry", "その他お問い合わせ"]
+
+}

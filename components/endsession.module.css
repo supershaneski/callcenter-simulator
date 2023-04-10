@@ -1,0 +1,15 @@
+.container {
+    background-color: #E74C3C;
+    position: relative;
+    color: #FFF;
+    width: 250px;
+    font-size: 1rem;
+    padding: .5rem 1rem;
+    text-align: center;
+    border-radius: 24px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+.container:hover {
+    background-color: #f4aca4;
+}
