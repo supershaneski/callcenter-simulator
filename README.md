@@ -19,7 +19,10 @@ The goal of this project is to test the idea of using AI in callcenter operation
 
 # Development
 
-This is an ongoing development...
+> This is an ongoing development...
+
+I will need to prepare a backend database to host at least the order items.
+This will enable me to be able to easily pull order items if needed.
 
 
 ## Functions
