@@ -351,6 +351,14 @@ export default function Chat() {
 
     const handleExit = () => {
 
+        if(messageItems.length < 2) {
+            
+            router.push('/')
+            
+            return
+
+        }
+        
         setOpenLoader(true)
         
     }
