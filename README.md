@@ -24,6 +24,26 @@ The goal of this project is to test the idea of using AI in callcenter operation
 I will need to prepare a backend database to host at least the order items.
 This will enable me to be able to easily pull order items if needed.
 
+As for the Data Source, although different document types are possible, at present I only process text files.
+You can easily extend this on your own. This is not important for me at the moment so it will take time when I add this function.
+
+Before you do inquiry, please note that you need to add a Data Source first.
+And every time you do inquiry, two OpenAPI endpoints are being used: Embeddings and Completion.
+
+Although you can add any text file, to make this effective, you need to format it in such a way that information can easily be parsed.
+
+Sample format:
+```
+Product List 製品リスト
+
+Category: Sofa ソファー
+
+Name: 2-seater Long Chair 2人掛椅子ロング
+Product-Code: ABC0001 / ABC0002 / ABC0003
+Price: ¥55000
+Variations: Red ABC0001 / Black ABC0002 / White ABC0003
+```
+
 
 ## Functions
 
