@@ -1,0 +1,154 @@
+Product List 製品リスト
+
+Category: ソファー
+
+Name: 2人掛椅子ロング
+Product-Code: ZU7922/ZU79C2
+Price: ¥24510
+Variations: Oak ZU7922 / Pine ZU79C2
+
+Name: 長椅子
+Product-Code: ZU7903/ZU79A3
+Price: ¥36670
+Variations: Ash ZU7903 / Oak ZU79A3
+
+Name: 右肘2人掛椅子
+Product-Code: ZU4618/UU4618
+Price: ¥45500
+Variations: Maple ZU4618 / Oak UU4618
+
+Name: 長椅子ロング
+Product-Code: ZU4813/UU4813
+Price: ¥33900
+Variations: Oak ZU4813 / Pine UU4813
+
+Name: 肘掛椅子
+Product-Code: ZT8300/UT8300
+Price: ¥28730
+Variations: Maple ZT8300 / Ash UT8300
+
+Category: パーソナルチェアー
+
+Name: リクライナー M
+Product-Code: RU7221/RU7201
+Price: ¥25800
+Variations: Bamboo RU7221 / Rattan RU7201
+
+Name: リクライナー S
+Product-Code: RU7224/RU7204
+Price: ¥32000
+Variations: Oak RU7224 / Maple RU7204
+
+Name: スツール M
+Product-Code: RU0226/RU0206
+Price: ¥35100
+Variations: Pine RU0226 / Ash RU0206
+
+Category: テーブル
+
+Name: サイドテーブル
+Product-Code: TT1072
+Price: ¥19800
+Variations: Oak TT1072
+
+Name: 棚なしテーブル
+Product-Code: TU3770 
+Price: ¥22300
+Variations: Maple TU3770
+
+Name: 引出し付きテーブル
+Product-Code: TU3771
+Price: ¥30200
+Variations: Maple TU3771
+
+Category: リビングボード
+
+Name: キャビネット（ガラス扉）
+Product-Code: QT90EF
+Price: ¥39720
+Variations: Aluminum QT90EF
+
+Name: 組合せミドルボード3（幅1644）
+Product-Code: QT90
+Price: ¥40900
+Variations: Oak QT90
+
+Name: テレビボード（幅2378）
+Product-Code: QT8017 
+Price: ¥44200
+Variations: Pine QT8017
+
+Category: ダイニングチェアー
+
+Name: 肘掛食堂椅子
+Product-Code: CU9310/CU9300 
+Price: ¥35000
+Variations: Ash CU9310 / Maple CU9300
+
+Name: 食堂椅子
+Product-Code: CU9315/CU9305 
+Price: ¥28600
+Variations: Oak CU9315 / Maple CU9305
+
+Name: 肘付食堂椅子
+Product-Code: CD3150/CD3100 
+Price: ¥41300
+Variations: Maple CD3150 / Pine CD3100
+
+Name: 肘付食堂椅子
+Product-Code: CU7110/CU7100 
+Price: ¥46100
+Variations: Pine CU7110 / Maple CU7100
+
+Category: ダイニングテーブル
+
+Name: 食堂テーブル（幅2000）
+Product-Code: DU7320 
+Price: ¥41900
+Variations: Oak DU7320
+
+Name: 食堂テーブル（幅1250）
+Product-Code: DU4320 
+Price: ¥36700
+Variations: Maple DU4320
+
+Name: 食堂テーブル（幅2000）2本脚タイプ
+Product-Code: DU7132 
+Price: ¥45000
+Variations: Pine DU7132 
+
+Delivery Fees 配送料
+
+Tokyo 東京 Free 無料
+Sapporo 札幌 Free 無料
+Osaka 大阪 Free 無料
+Nagoya 名古屋 Free 無料
+
+Hokkaido 北海道 ¥2200
+Okinawa 沖縄 ¥3500
+Tohoku 東北 ¥2250
+Kanto 関東 ¥1560
+Kansai 関西 ¥3100
+
+Expedited Delivery お急ぎ便 1-2days 1~2日 ¥1500
+
+Delivery Days 配達日数
+
+Tokyo 東京 1day 1日
+Sapporo 札幌 1day 1日
+Osaka 大阪 1day 1日
+Nagoya 名古屋 1day 1日
+
+Hokkaido 北海道 2day 2日
+Okinawa 沖縄 3day 3日
+Tohoku 東北 2day 2日
+Kanto 関東 2day 2日
+Kansai 関西 2day 2日
+
+Discount 割引
+
+First Purchase 最初の購入 10% OFF
+Bulk Purchase 一括購入 5% OFF
+Senior Citizen 高齢者 10% OFF
+
+
