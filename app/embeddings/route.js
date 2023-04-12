@@ -5,9 +5,7 @@ import { COSINE_SIM_THRESHOLD } from '../../lib/utils'
 export async function POST(request) {
 
     const { files, question, maxResults } = await request.json()
-
-    console.log(files, question, maxResults)
-
+    
     if (!question) {
         return new Response('Bad question', {
             status: 400,
@@ -27,17 +25,13 @@ export async function POST(request) {
     }
 
     try {
-
-        console.log('AAA')
-
+        
         const searchQueryEmbeddingResponse = await embedding({
             input: question,
         })
     
         const searchQueryEmbedding = searchQueryEmbeddingResponse.length > 0 ? searchQueryEmbeddingResponse[0] : []
         
-        console.log('BBB')
-
         const rankedChunks = files.flatMap((file) =>
             file.chunks
             ? file.chunks.map((chunk) => {

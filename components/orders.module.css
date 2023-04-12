@@ -3,7 +3,6 @@
 }
 
 .panel {
-    /*background-color: #dec;*/
     position: relative;
     width: 100%;
     margin-bottom: 1rem;
@@ -19,7 +18,6 @@
 }
 
 .form {
-    /*background-color: pink;*/
     margin-top: 1rem;
 }
 
@@ -42,7 +40,6 @@
     margin-bottom: 1rem;
 }
 .orderItem {
-    /*width: calc(100% - 310px);*/
     width: calc(100% - 400px);
 }
 .orderItem2 {
@@ -73,6 +70,10 @@
 
 .table .tabCell {
     font-size: .9rem;
+}
+
+.table .tabBody .tabRow {
+    cursor: pointer;
 }
 
 .table .tabBody .tabRow:hover {

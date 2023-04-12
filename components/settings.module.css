@@ -4,8 +4,6 @@
 }
 
 .appBar {
-    /*box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;*/
-    /*background-color: #fff;*/
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     background-color: #fff;
     position: relative;
@@ -19,6 +17,7 @@
     position: relative;
     margin-left: 1rem;
 }
+
 .appTitleText {
     font-family: Roboto, Helvetica, Arial, sans-serif;
     font-size: 1.1rem;

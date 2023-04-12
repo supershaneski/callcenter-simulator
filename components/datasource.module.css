@@ -7,6 +7,7 @@
     width: 100%;
     margin-bottom: 2rem;
     box-sizing: border-box;
+    overflow-x: hidden;
 }
 .panel:last-child {
     margin-bottom: 0;
@@ -24,7 +25,6 @@
 }
 .table th {
     font-size: .8rem;
-    /*font-weight: 500;*/
 }
 .table td {
     font-size: .8rem;

@@ -57,6 +57,72 @@ Variations: Red ABC0001 / Black ABC0002 / White ABC0003
 * Needs to provide backend API for data instead of relying on local docs
 * Handle orders
 
+# Stack
+
+* [MongoDB](https://github.com/mongodb/node-mongodb-native), official MongoDB driver for Node.js.
+
+    ```
+    npm install mongodb
+    ```
+
+    For database, we will be using local MongoDB database.
+    Since the point of this application is not the database, 
+    we will be preparing the database and collections beforehand using [MongoDB Shell](https://www.mongodb.com/docs/mongodb-shell/).
+
+    To run the shell
+    ```
+    mongodb
+    ```
+
+    To add database and collection
+    ```js
+    use callcenter
+
+    db.order.insertOne({id: 'abc123', name: 'John Doe'})
+
+    db.order.find()
+    ```
+
+    To connect to MongoDB in route handler
+    ```js
+    import { MongoClient } from 'mongodb'
+    
+    const client = new MongoClient(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`)
+
+    export async function POST(request) {
+
+        try {
+
+            await client.connect()
+
+            const db = client.db()
+            const items = await db.collection('order').find().toArray()
+
+            console.log(items)
+
+        } catch(error) {
+            console.log(error)
+        } finally {
+            await client.close()
+        }
+
+        ...
+        
+        return new Response(result, {
+            status: 200,
+        })
+
+    }
+    ```
+
+    where the environmental variables from `.env`
+    ```
+    DB_HOST=localhost
+    DB_USER=root
+    DB_PASS=
+    DB_NAME=callcenter
+    DB_PORT=27017
+    ```
 
 # Setup
 

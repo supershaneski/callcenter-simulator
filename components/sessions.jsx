@@ -6,15 +6,11 @@ import IconButton from '@mui/material/IconButton'
 import ClearIcon from '@mui/icons-material/Clear'
 import Rating from '@mui/material/Rating'
 
-import sessions from '../lib/session'
-
+import useCaption from '../lib/usecaption'
 import { getDateTime, formatMessage } from '../lib/utils'
 
 import CustomTheme from './customtheme'
-
-import useCaption from '../lib/usecaption'
 import captions from '../assets/settings.json'
-
 import classes from './sessions.module.css'
 
 const getInquiryType = (n) => {
@@ -25,129 +21,65 @@ const getMode = (n) => {
     return n > 0 ? 'voice' : 'chat'
 }
 
-export default function Sessions(props) {
+export default function Sessions() {
 
     const setCaption = useCaption(captions)
 
     const [sessionItems, setSessionItems] = React.useState([])
-
-    const [sessionId, setSessionId] = React.useState('')
     const [session, setSession] = React.useState(null)
 
     React.useEffect(() => {
 
-        const initSession = async () => {
-            await getSessions()
-        }
-
-        initSession()
+        getSessions()
 
     }, [])
+    
+    const getSessions = React.useCallback(async () => {
 
-    React.useEffect(() => {
+        try {
 
-        const handleSession = async () => {
-
-            let s = await sessions.getSession(sessionId)
-
-            let items = s.contents.items.map((item) => {
-                return {
-                    ...item,
-                    sentiment: '',
+            const response = await fetch('/sessions/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
                 }
             })
 
-            //console.log('[ITEMS]')
-            //console.log(items)
-            //console.log('[LOOP]')
-            
-            for(let i = 1; i < items.length; i++) {
-
-                if(items[i].type === 'system') {
-
-                    let tokens = items[i].contents.split('\n')
-
-                    //console.log(tokens)
-
-                    for(let k = 0; k < tokens.length; k++) {
-
-                        if(tokens[k].indexOf('Customer-Sentiment:') >= 0) {
-                            items[i - 1].sentiment = tokens[k].substr(20)
-                            //items[i].contents = tokens.slice(1).join('\n').replace('SESSION-ENDED', '')
-                            items[i].contents = tokens.slice(k + 1).join('\n')
-                            break
-                        }
-
-                    }
-
-                    //console.log(i, items[i].type, tokens[0])
-
-                }
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
             }
 
-            s.contents.items = items
+            const { items } = await response.json()
 
-            //console.log('session', s.contents)
+            const sorted_items = items.sort((a, b) => {
+                if(a.datetime > b.datetime) return -1
+                if(a.datetime < b.datetime) return 1
+                return 0
+            })
+            
+            setSessionItems(sorted_items)
 
-            setSession(s.contents)
-
+        } catch(error) {
+            console.log(error)
         }
-
-        if(sessionId) {
-
-            handleSession()
-
-        }
-
-    }, [sessionId])
-
-    const getSessions = React.useCallback(async () => {
-
-        const raw_items = await sessions.getSessions()
-        const items = raw_items.map((item) => item.contents).sort((a, b) => {
-            if (a.datetime > b.datetime) return -1
-            if (a.datetime < b.datetime) return 1
-            return 0
-        })
-        
-        setSessionItems(items)
 
     }, [])
 
-    /*
-    {
-                                session.items.map((item) => {
-                                    if(item.type === 'assistant' || item.type === 'system') {
+    const handleSessionMessage = (id) => (e) => {
+        
+        const msg = session.items.find((item) => item.id === id)
+        
+        console.log(msg)
 
-                                        const txt = formatMessage(item.contents) // item.contents.replace('Response:', '')
+    }
 
-                                        return (
-                                            <React.Fragment key={item.id}>
-                                                <tr className={classes.tabRow}>
-                                                    <td className={classes.tabCell}>{setCaption('role')}: {setCaption('system')}</td>
-                                                    <td colSpan={3} className={classes.tabCell}>&nbsp;</td>
-                                                </tr>
-                                                <tr className={classes.tabRow}>
-                                                    <td colSpan={4} className={classes.tabCell}>{txt}</td>
-                                                </tr>
-                                            </React.Fragment>
-                                        )
-                                    } else {
-                                        return (
-                                            <React.Fragment key={item.id}>
-                                                <tr className={classes.tabRow}>
-                                                    <td className={classes.tabCell}>{setCaption('role')}: {setCaption('customer')}</td>
-                                                    <td colSpan={2} className={classes.tabCell}>&nbsp;</td>
-                                                    <td className={classes.tabCell}>{setCaption('sentiment')}: { item?.sentiment }</td>
-                                                </tr>
-                                                <tr className={classes.tabRow}>
-                                                    <td colSpan={4} className={classes.tabCell}>{item.contents}</td>
-                                                </tr>
-                                            </React.Fragment>
-                                        )
-                                    }
-                                })
-                            }*/
+    const handleSelectSession = (id) => (e) => {
+        
+        const s = sessionItems.find((item) => item.id === id)
+
+        setSession(s)
+
+    }
 
     return (
         <div className={classes.container}>
@@ -174,14 +106,22 @@ export default function Sessions(props) {
                         sessionItems.length > 0 &&
                         sessionItems.map((item) => {
                             return (
-                                <tr key={item.id} onClick={() => setSessionId(item.id)} className={classes.tabRow}>
+                                <tr 
+                                key={item.id} 
+                                onClick={handleSelectSession(item.id)}
+                                className={classes.tabRow}
+                                >
                                     <td className={classes.tabCell}>{ item.id }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ getDateTime(item.datetime) }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ setCaption(getInquiryType(item.inquiry)) }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ setCaption(getMode(item.mode)) }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>
                                         <CustomTheme>
-                                            <Rating readOnly={true} value={parseInt(item?.rate)}/>
+                                            <Rating 
+                                            readOnly={true} 
+                                            value={parseInt(item?.rate)}
+                                            size="small"
+                                            />
                                         </CustomTheme>
                                     </td>
                                     <td className={classes.tabCell}>
@@ -195,30 +135,38 @@ export default function Sessions(props) {
                 </table>
             </div>
             {
-                (sessionId && session) &&
+                session &&
                 <div className={classes.preview}>
                     <div className={classes.toolbar}>
                         <div className={classes.close}>
                             <CustomTheme>
-                                <IconButton onClick={() => setSessionId('')}>
+                                <IconButton 
+                                //onClick={() => setSessionId('')}
+                                onClick={() => setSession(null)}
+                                >
                                     <ClearIcon />
                                 </IconButton>
                             </CustomTheme>
                         </div>
                     </div>
                     <table className={classes.table}>
-                        <tbody>
+                        <thead>
                             <tr className={classes.tabRow}>
-                                <td className={classes.tabCell}>{ session.id }</td>
-                                <td className={classes.tabCell}>{ setCaption(getInquiryType(session.inquiry)) }</td>
-                                <td className={classes.tabCell}>{ setCaption(getMode(session.mode)) }</td>
-                                <td className={classes.tabCell} style={{width: '120px'}}>
+                                <th className={classes.tabHead}>{ session.id }</th>
+                                <th className={classes.tabHead}>{ setCaption(getInquiryType(session.inquiry)) }</th>
+                                <th className={classes.tabHead}>{ setCaption(getMode(session.mode)) }</th>
+                                <th className={classes.tabHead} style={{width: '80px'}}>
                                     <CustomTheme>
-                                        <Rating readOnly={true} value={parseInt(session?.rate)}/>
+                                        <Rating 
+                                        readOnly={true} 
+                                        size="small"
+                                        value={parseInt(session?.rate)}/>
                                     </CustomTheme>
-                                </td>
-                                <td className={classes.tabCell} style={{textAlign: 'right'}}>{ getDateTime(session.datetime) }</td>
+                                </th>
+                                <th className={classes.tabHead} style={{textAlign: 'right'}}>{ getDateTime(session.datetime) }</th>
                             </tr>
+                        </thead>
+                        <tbody>
                             <tr className={classes.tabRow}>
                                 <td colSpan={5} className={classes.tabCell}>
                                     { setCaption('summary') }:<br />
@@ -229,21 +177,10 @@ export default function Sessions(props) {
                                 session.items.map((item) => {
                                     if(item.type === 'assistant' || item.type === 'system') {
 
-                                        const txt = formatMessage(item.contents) // item.contents.replace('Response:', '')
+                                        const txt = formatMessage(item.contents)
 
-                                        /*
-                                        <React.Fragment key={item.id}>
-                                                <tr className={classes.tabRow}>
-                                                    <td className={classes.tabCell}>{setCaption('role')}: {setCaption('system')}</td>
-                                                    <td colSpan={3} className={classes.tabCell}>&nbsp;</td>
-                                                </tr>
-                                                <tr className={classes.tabRow}>
-                                                    <td colSpan={4} className={classes.tabCell}>{txt}</td>
-                                                </tr>
-                                            </React.Fragment>
-                                        */
                                         return (
-                                            <tr className={classes.tabRow} key={item.id}>
+                                            <tr className={classes.tabRow} key={item.id} onClick={handleSessionMessage(item.id)}>
                                                 <td colSpan={5} className={classes.tabCell} style={{width: '100%'}}>
                                                     <table className={classes.tableData}>
                                                         <tbody>
@@ -262,20 +199,9 @@ export default function Sessions(props) {
                                             </tr>
                                         )
                                     } else {
-                                        /*
-                                        <React.Fragment key={item.id}>
-                                                <tr className={classes.tabRow}>
-                                                    <td className={classes.tabCell}>{setCaption('role')}: {setCaption('customer')}</td>
-                                                    <td colSpan={2} className={classes.tabCell}>&nbsp;</td>
-                                                    <td className={classes.tabCell}>{setCaption('sentiment')}: { item?.sentiment }</td>
-                                                </tr>
-                                                <tr className={classes.tabRow}>
-                                                    <td colSpan={4} className={classes.tabCell}>{item.contents}</td>
-                                                </tr>
-                                            </React.Fragment>
-                                        */
+                                        
                                         return (
-                                            <tr className={classes.tabRow} key={item.id}>
+                                            <tr className={classes.tabRow} key={item.id} onClick={handleSessionMessage(item.id)}>
                                                 <td colSpan={5} className={classes.tabCell} style={{width: '100%'}}>
                                                     <table className={classes.tableData}>
                                                         <tbody>

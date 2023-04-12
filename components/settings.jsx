@@ -6,46 +6,36 @@ import { useRouter } from 'next/navigation'
 
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
-import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
-
 import ClearIcon from '@mui/icons-material/Clear'
-import SettingsIcon from '@mui/icons-material/Settings'
 
 import DataSource from './datasource'
 import Sessions from './sessions'
 import Orders from './orders'
-
 import CustomTheme from './customtheme'
 
-import useAppStore from '../stores/appstore'
-
 import useDarkMode from '../lib/usedarkmode'
-
 import useCaption from '../lib/usecaption'
 import captions from '../assets/settings.json'
-
 import classes from './settings.module.css'
 
 function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-  
+    const { children, value, index, ...other } = props
     return (
-      <div
+        <div
         role="tabpanel"
         hidden={value !== index}
         id={`simple-tabpanel-${index}`}
         aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box sx={{ p: 3 }}>
-            { children }
-          </Box>
-        )}
-      </div>
-    );
+        {...other}>
+            {value === index && (
+                <Box sx={{ p: 3 }}>
+                    { children }
+                </Box>
+            )}
+        </div>
+    )
 }
 
 export default function Settings() {

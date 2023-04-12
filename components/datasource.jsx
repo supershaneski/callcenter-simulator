@@ -5,12 +5,12 @@ import React from 'react'
 import { compact } from 'lodash'
 
 import LoadingButton from '@mui/lab/LoadingButton'
-import Button from '@mui/material/Button'
+//import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import ClearIcon from '@mui/icons-material/Clear';
 import DeleteIcon from '@mui/icons-material/DeleteForever';
 
-import useFileStore from '../stores/filestore';
+//import useFileStore from '../stores/filestore';
 
 import { getDateTime, MAX_NUM_FILES, MAX_FILE_SIZE_MB } from '../lib/utils'
 
@@ -24,8 +24,8 @@ export default function DataSource() {
 
     const setCaption = useCaption(captions)
 
-    const files = useFileStore((state) => state.files)
-    const addFile = useFileStore((state) => state.add)
+    //const files = useFileStore((state) => state.files)
+    //const addFile = useFileStore((state) => state.add)
 
     const fileRef = React.useRef(null)
 
@@ -35,8 +35,35 @@ export default function DataSource() {
     const [selectedFile, setSelectedFile] = React.useState('')
 
     React.useEffect(() => {
-        setSavedFiles(files)
+
+        getFiles()
+
     }, [])
+
+    const getFiles = React.useCallback(async () => {
+
+        try {
+
+            const response = await fetch('/files/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const { items } = await response.json()
+
+            setSavedFiles(items)
+
+        } catch(error) {
+            console.log(error)
+        }
+
+    })
 
     const handleFileChange = React.useCallback(async (files) => {
         
@@ -107,18 +134,43 @@ export default function DataSource() {
         
         const validFiles = compact(uploadedFiles);
         
-        addFile(validFiles)
-        setSavedFiles((prevFiles) => [...prevFiles, ...validFiles])
+        try {
+
+            const response = await fetch('/files/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    files: validFiles,
+                })
+            })
+
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const result = await response.json()
+
+            setSavedFiles((prevFiles) => [...prevFiles, ...validFiles])
         
-        setLoading(false)
-        setErrorMessage('')
+            setLoading(false)
+            setErrorMessage('')
+
+            getFiles()
+
+        } catch(error) {
+
+            console.log(error)
+
+        }
 
     }, [savedFiles])
     
     const handleSelected = (file) => {
         
-        const sfile = files.find((item) => item.name === file)
-
+        const sfile = savedFiles.find((item) => item.name === file)
+        
         setSelectedFile(sfile)
 
     }
@@ -127,6 +179,10 @@ export default function DataSource() {
 
         e.preventDefault()
         e.stopPropagation()
+
+        // TODO: Delete file
+
+        console.log(`Delete File: ${file}`)
 
     }
     
@@ -154,7 +210,6 @@ export default function DataSource() {
                     errorMessage && <span className={classes.error}>{ errorMessage }</span>
                 }
             </div>
-
             <div className={classes.panel}>
                 <table className={classes.table}>
                     <thead>

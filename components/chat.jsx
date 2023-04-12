@@ -2,39 +2,28 @@
 
 import React from 'react'
 import { createPortal } from 'react-dom'
-//import PropTypes from 'prop-types'
 
 import { useRouter } from 'next/navigation'
 
-import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import Button from '@mui/material/Button'
-
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
-
 import ClearIcon from '@mui/icons-material/Clear'
 import SendIcon from '@mui/icons-material/Send'
 
 import ContentItem from './contentitem'
 import LoadingText from './loadingtext'
-
 import captions from '../assets/chat.json'
 import useCaption from '../lib/usecaption'
 
-import sessions from '../lib/session'
 import useAppStore from '../stores/appstore'
-import useFileStore from '../stores/filestore'
 
 import { getSimpleId, formatMessage } from '../lib/utils'
 
 import Loader from './loader'
-
 import EndSession from './endsession'
-
 import CustomTheme from './customtheme'
-
 import classes from './chat.module.css'
 
 export default function Chat() {
@@ -45,7 +34,6 @@ export default function Chat() {
 
     const setMode = useAppStore((state) => state.setMode)
     const inquiryType = useAppStore((state) => state.inquiryType)
-    const files = useFileStore((state) => state.files)
 
     const timerRef = React.useRef()
     const messageRef = React.useRef()
@@ -56,9 +44,13 @@ export default function Chat() {
     const [loading, setLoading] = React.useState(false)
 
     const [openLoader, setOpenLoader] = React.useState(false)
-
     const [isMounted, setMounted] = React.useState(false)
     const [isSessionEnded, setSessionEnd] = React.useState(false)
+
+    const [files, setFiles] = React.useState([])
+
+    //const [orderId, setOrderId] = React.useState('')
+    const [orderData, setOrderData] = React.useState('')
 
     React.useEffect(() => {
 
@@ -92,23 +84,38 @@ export default function Chat() {
 
         if(isMounted) {
 
+            getFiles()
+
             welcomeGreeting()
 
         }
 
     }, [isMounted])
+    
+    const getFiles = React.useCallback(async () => {
 
-    /*
-    React.useEffect(() => {
+        try {
 
-        if(openLoader) {
-            
-            getEvaluation()
+            const response = await fetch('/files/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
 
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const { items } = await response.json()
+
+            setFiles(items)
+
+        } catch(error) {
+            console.log(error)
         }
 
-    }, [openLoader])
-    */
+    }, [])
 
     const welcomeGreeting = React.useCallback(() => {
         
@@ -149,22 +156,6 @@ export default function Chat() {
 
                 str = formatMessage(item.contents)
 
-                /*
-                const tokens = item.contents.split('\n')
-
-                for(let i = 0; i < tokens.length; i++) {
-
-                    if(tokens[i].indexOf('Customer-Sentiment:') < 0 || tokens[i].indexOf('Command-Line:') < 0) {
-
-                        str += tokens[i].replace('Response:', '')
-
-                    }
-
-                }
-
-                str = str.replace('SESSION-ENDED', '')
-                */
-
             }
 
             return `${author}: ${str}`
@@ -172,16 +163,8 @@ export default function Chat() {
         
         const contents = content_items.join('\n')
 
-        //console.log('summary', contents)
-
         let result = await new Promise(async (resolve, reject) => {
 
-            /*
-            const question = `this ends the simulation. can you evaluate the overall session and give analysis.`
-                //`Simulation has ended.` +
-                //`Please evaluate the overall session, give final sentiment analysis and make suggestion if necessary.`
-            */
-            
             const response = await fetch('/summary/', {
                 method: 'POST',
                 headers: {
@@ -221,9 +204,29 @@ export default function Chat() {
             summary: result.output,
         }
 
-        await sessions.createSessionAsync(sid, session)
+        try {
 
-        router.push('/')
+            const response = await fetch('/sessions/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    session,
+                })
+            })
+
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const result = await response.json()
+
+            router.push('/')
+
+        } catch(error) {
+            console.log(error)
+        }
 
     }, [messageItems])
     
@@ -250,6 +253,40 @@ export default function Chat() {
         setLoading(true)
 
         scrollToTop()
+
+        let order_data = orderData
+
+        if(!orderData) {
+
+            try {
+
+                const response_order = await fetch('/order/', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: inputText,
+                    }),
+                })
+
+                if (!response_order.ok) {
+                    console.log('[order] Oops, an error occurred', response_order.status)
+                }
+
+                const result_order = await response_order.json()
+
+                setOrderData(result_order.output)
+
+                order_data = result_order.output
+
+                console.log('output', order_data)
+
+            } catch(error) {
+                console.log(error)
+            }
+
+        }
 
         try {
 
@@ -286,6 +323,7 @@ export default function Chat() {
                   previous,
                   inquiry: inquiryType,
                   fileChunks: results,
+                  orderData: order_data,
                 }),
             })
 
@@ -374,23 +412,6 @@ export default function Chat() {
         return setCaption(key)
     }
 
-    /*const handleKeyDown = (e) => {
-        if(e.keyCode === 13) {
-            
-            e.preventDefault()
-            e.stopPropagation()
-
-            try {
-                document.activeElement.blur()
-            } catch(err) {
-                console.log(err)
-            }
-
-            handleSubmit()
-
-        }
-    }*/
-
     return (
         <div className={classes.container}>
             <div className={classes.header}>
@@ -409,11 +430,9 @@ export default function Chat() {
                         messageItems.length > 0 &&
                         messageItems.map((item) => {
                             
-                            let text = item.contents //.replace('SESSION-ENDED', '')
+                            let text = item.contents
 
                             if(item.type !== 'user') {
-                                //let tokens = text.split('\n')
-                                //if(tokens[0].indexOf('Customer-Sentiment:') >= 0) text = tokens.slice(1)
                                 text = formatMessage(item.contents)
                             }
 
@@ -443,10 +462,8 @@ export default function Chat() {
                     <CustomTheme>
                         <Box 
                         component="form" 
-                        //onSubmit={handleSubmit} 
                         noValidate>
                             <TextField 
-                            //disabled={loading || isSessionEnded}
                             disabled={loading}
                             fullWidth
                             multiline
@@ -454,21 +471,18 @@ export default function Chat() {
                             inputRef={inputRef}
                             value={inputText}
                             placeholder={setCaption('write-message')}
-                            //onKeyDown={handleKeyDown}
                             onChange={(e) => setInputText(e.target.value)}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         <>
                                         <IconButton
-                                        //disabled={inputText.length === 0 || isSessionEnded}
                                         disabled={inputText.length === 0}
                                         onClick={() => setInputText('')}
                                         >
                                             <ClearIcon />
                                         </IconButton>
                                         <IconButton
-                                        //disabled={inputText.length === 0 || isSessionEnded}
                                         disabled={inputText.length === 0}
                                         onClick={handleSubmit}
                                         >

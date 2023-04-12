@@ -1,5 +1,7 @@
 /** @type { import('@storybook/react').Preview } */
 
+import { AppRouterContext } from 'next/dist/shared/lib/app-router-context'
+
 import '../assets/preview.css' // grid
 
 const preview = {
@@ -11,6 +13,9 @@ const preview = {
         date: /Date$/,
       },
     },
+  },
+  nextRouter: {
+    Provider: AppRouterContext.Provider,
   },
 };
 

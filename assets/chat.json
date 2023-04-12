@@ -1,7 +1,7 @@
 {
-    "order-inquiry": ["注文に関するお問い合わせ", "Order Inquiry", "注文に関するお問い合わせ"],
-    "product-inquiry": ["製品に関するお問い合わせ", "Product Inquiry", "製品に関するお問い合わせ"],
-    "others": ["その他お問い合わせ", "Other Inquiry", "その他お問い合わせ"],
+    "order-inquiry": ["Order Inquiry", "注文に関するお問い合わせ"],
+    "product-inquiry": ["Product Inquiry", "製品に関するお問い合わせ"],
+    "others": ["Other Inquiry", "その他お問い合わせ"],
     
     "greeting-product-1": ["Hello! Thank you for your interest in our products. How may I assist you today?", "こんにちは！私たちの商品に興味を持っていただき、ありがとうございます。何かお手伝いできることはありますか？"],
     "greeting-product-2": ["Hi there! How can I help you with your product inquiry?", "こんにちは！製品のお問い合わせについて、どういったことでしょうか？"],
@@ -12,14 +12,14 @@
     "greeting-other-1": ["Hello! Thank you for contacting us. How may I assist you with your inquiry?", "こんにちは！ご連絡いただきありがとうございます。何かお力になれることがありますでしょうか？"],
     "greeting-other-2": ["Hi there! How can I help you today?", "こんにちは！何かご質問がありましたら、お気軽にお尋ねください。"],
 
-    "error-message": ["エラーが発生しました", "Error occurred", "エラーが発生しました"],
+    "error-message": ["Error occurred", "エラーが発生しました"],
 
-    "session-end": ["セッションが終了しました", "Session has Ended", "セッションが終了しました"],
+    "session-end": ["Session has Ended", "セッションが終了しました"],
 
-    "wait-message": ["しばらくお待ちください...", "Please wait for while...", "しばらくお待ちください..."],
+    "wait-message": ["Please wait for while...", "しばらくお待ちください..."],
 
-    "write-message": ["メッセージを書く...", "Write message...", "メッセージを書く..."],
+    "write-message": ["Write message...", "メッセージを書く..."],
 
-    "thank-you": ["ありがとうございます。あなたの経験を評価してください。", "Thank you. Please rate your experience.", "ありがとうございます。あなたの経験を評価してください。"],
-    "close-session": ["セッションを閉じる", "Close Session", "セッションを閉じる"]
+    "thank-you": ["Thank you. Please rate your experience.", "ありがとうございます。あなたの経験を評価してください。"],
+    "close-session": ["Close Session", "セッションを閉じる"]
 }

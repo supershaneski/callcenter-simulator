@@ -5,7 +5,6 @@
 }
 
 .header {
-    /*box-shadow: rgba(50, 50, 93, 0.125) 0px 12px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px;*/
     box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
     background-color: #fff;
     position: relative;
@@ -22,9 +21,6 @@
 }
 
 .input {
-    /*box-shadow: rgba(50, 50, 93, 0.125) 0px 12px 25px -5px, rgba(0, 0, 0, 0.2) 0px 5px 10px -5px;*/
-    /*box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;*/
-    /*background-color: #fff;*/
     background-color: #fff9;
     position: fixed;
     left: 0;
@@ -74,7 +70,7 @@
     }
 
     .input {
-        background-color: #0009;
+        background-color: #333;
     }
 
 }

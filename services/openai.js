@@ -36,6 +36,7 @@ export async function textCompletion({
     model = 'text-davinci-003',
     max_tokens = 1024,
     temperature = 0,
+    stop = '\n'
 }) {
 
     try {
@@ -45,6 +46,7 @@ export async function textCompletion({
             model,
             max_tokens,
             temperature,
+            stop,
         })
         
         if (!result.data.choices[0].text) {

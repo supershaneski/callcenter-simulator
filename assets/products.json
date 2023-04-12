@@ -12,9 +12,40 @@
         { "id": "ZU4813", "name": "長椅子ロング Oak ZU4813", "price": 33900 },
         { "id": "UU4813", "name": "長椅子ロング Pine UU4813", "price": 33900 },
 
+        { "id": "ZT8300", "name": "肘掛椅子 Maple ZT8300", "price": 28730 },
+        { "id": "UT8300", "name": "肘掛椅子 Ash UT8300", "price": 28730 },
+
         { "id": "RU7221", "name": "リクライナー M Bamboo RU7221", "price": 25800 },
         { "id": "RU7201", "name": "リクライナー M Rattan RU7201", "price": 25800 },
 
-        { "id": "QT90EF", "name": "キャビネット（ガラス扉） Aluminum QT90EF", "price": 39720 }
+        { "id": "RU7224", "name": "リクライナー S Oak RU7224", "price": 32000 },
+        { "id": "RU7204", "name": "リクライナー S Maple RU7204", "price": 32000 },
+
+        { "id": "RU0226", "name": "スツール M Pine RU0226", "price": 35100 },
+        { "id": "RU0206", "name": "スツール M Ash RU0206", "price": 35100 },
+
+        { "id": "TT1072", "name": "サイドテーブル Oak TT1072", "price": 19800 },
+        { "id": "TU3770", "name": "棚なしテーブル Maple TU3770", "price": 22300 },
+        { "id": "TU3771", "name": "引出し付きテーブル Maple TU3771", "price": 30200 },
+
+        { "id": "QT90EF", "name": "キャビネット（ガラス扉） Aluminum QT90EF", "price": 39720 },
+        { "id": "QT90", "name": "組合せミドルボード3（幅1644） Oak QT90", "price": 40900 },
+        { "id": "QT8017", "name": "テレビボード（幅2378） QT8017", "price": 44200 },
+
+        { "id": "CU9310", "name": "肘掛食堂椅子 Ash CU9310", "price": 35000 },
+        { "id": "CU9300", "name": "肘掛食堂椅子 Maple CU9300", "price": 35000 },
+
+        { "id": "CU9315", "name": "食堂椅子 Oak CU9315", "price": 28600 },
+        { "id": "CU9305", "name": "食堂椅子 Maple CU9305", "price": 28600 },
+
+        { "id": "CD3150", "name": "肘付食堂椅子 Maple CD3150", "price": 41300 },
+        { "id": "CD3100", "name": "肘付食堂椅子 Pine CD3100", "price": 41300 },
+
+        { "id": "CU7110", "name": "肘付食堂椅子 Pine CU7110", "price": 46100 },
+        { "id": "CU7100", "name": "肘付食堂椅子 Maple CU7100", "price": 46100 },
+
+        { "id": "DU7320", "name": "食堂テーブル（幅2000） Oak DU7320", "price": 41900 },
+        { "id": "DU4320", "name": "食堂テーブル（幅1250） Maple DU4320", "price": 36700 },
+        { "id": "DU7132", "name": "食堂テーブル（幅2000）2本脚タイプ Pine DU7132", "price": 45000 }
     ]
 }

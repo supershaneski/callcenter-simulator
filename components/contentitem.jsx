@@ -10,31 +10,8 @@ import AgentIcon from '@mui/icons-material/SupportAgent'
 
 import CustomTheme from './customtheme'
 import useAppStore from '../stores/appstore'
-//import { CharacterIcon } from './charactericon'
 
 import classes from './contentitem.module.css'
-
-/*
-const SelectedSystemAvatar = ({ 
-    icon = 0, 
-    color = '#1affb2'
-}) => {
-    return (
-        <Avatar sx={{ backgroundColor: 'transparent', width: 24, height: 24  }}>
-            <CharacterIcon icon={icon} color={color} />
-        </Avatar>
-    )
-    
-}
-*/
-
-const SelectedSystemAvatar = () => {
-    return (
-        <Avatar sx={{ width: 24, height: 24  }}>
-            <AgentIcon />
-        </Avatar>
-    )
-}
 
 export default function ContentItem({ 
     role = '', 
@@ -47,7 +24,7 @@ export default function ContentItem({
     const leftRef = React.useRef()
     const rightRef = React.useRef()
 
-    const isDarkMode = useAppStore((state) => state.darkMode)
+    //const isDarkMode = useAppStore((state) => state.darkMode)
 
     const handleSelect = () => {
         if(role === 'user') {

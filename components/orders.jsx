@@ -3,7 +3,7 @@
 import React from 'react'
 
 import LoadingButton from '@mui/lab/LoadingButton'
-import Button from '@mui/material/Button'
+//import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import TextField from '@mui/material/TextField'
 import FormControl from '@mui/material/FormControl'
@@ -11,19 +11,19 @@ import InputAdornment from '@mui/material/InputAdornment'
 import InputLabel from '@mui/material/InputLabel'
 import Select from '@mui/material/Select'
 
-import Menu from '@mui/material/Menu'
+//import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 
 import AddIcon from '@mui/icons-material/Add'
-import AddCartIcon from '@mui/icons-material/AddShoppingCart'
+//import AddCartIcon from '@mui/icons-material/AddShoppingCart'
 import ClearIcon from '@mui/icons-material/Clear'
-import DeleteIcon from '@mui/icons-material/DeleteForever'
+//import DeleteIcon from '@mui/icons-material/DeleteForever'
 
 import CustomTheme from './customtheme'
 
 import { formatPrice, getSimpleId } from '../lib/utils'
 
-import useOrderStore from '../stores/orderstore'
+//import useOrderStore from '../stores/orderstore'
 
 import products from '../assets/products.json'
 
@@ -36,8 +36,8 @@ export default function Orders() {
 
     const setCaption = useCaption(captions)
 
-    const orders = useOrderStore((state) => state.orders)
-    const addOrder = useOrderStore((state) => state.add)
+    //const orders = useOrderStore((state) => state.orders)
+    //const addOrder = useOrderStore((state) => state.add)
 
     const [fullName, setFullName] = React.useState('')
     const [address, setAddress] = React.useState('')
@@ -47,17 +47,46 @@ export default function Orders() {
     const [selQuantity, setSelQuantity] = React.useState(1)
     const [unitPrice, setUnitPrice] = React.useState('---')
     const [subTotalPrice, setSubTotalPrice] = React.useState('---')
+    const [selStatus, setSelStatus] = React.useState('Processing')
 
     const [loading, setLoading] = React.useState(false)
-    const [errorMessage, setErrorMessage] = React.useState('')
+    //const [errorMessage, setErrorMessage] = React.useState('')
 
     const [selectedOrder, setSelectedOrder] = React.useState(null)
 
+    const [orders, setOrders] = React.useState([])
+    const [deliveryDay, setDeliveryDay] = React.useState(1)
+
     React.useEffect(() => {
 
-        //console.log('[ORDERS]', orders)
+        getOrders()
 
-    }, [orders])
+    }, [])
+
+    const getOrders = React.useCallback(async () => {
+
+        try {
+
+            const response = await fetch('/orders/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const { items } = await response.json()
+
+            setOrders(items)
+
+        } catch(error) {
+            console.log(error)
+        }
+
+    })
 
     const handleSelectOrder = (e) => {
         
@@ -100,7 +129,7 @@ export default function Orders() {
             productCode: selOrder,
             name: order_item.name,
             quantity: selQuantity,
-            price: unitPrice
+            price: unitPrice,
         }]])
 
         setSelOrder('NO-PRODUCT-ID')
@@ -110,7 +139,7 @@ export default function Orders() {
 
     }
 
-    const handleAddOrder = () => {
+    const handleAddOrder = async () => {
 
         setLoading(true)
         
@@ -125,30 +154,44 @@ export default function Orders() {
             items: orderItems,
             quantity: orderItems.length,
             total: total_price,
+            status: selStatus,
+            deliveryday: deliveryDay,
         }
 
-        addOrder(order)
+        try {
 
-        setTimeout(() => {
+            const response = await fetch('/orders/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    order,
+                })
+            })
+
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const result = await response.json()
+
+            setTimeout(() => {
             
-            setFullName('')
-            setAddress('')
-            setOrderItems([])
+                setFullName('')
+                setAddress('')
+                setOrderItems([])
+                setLoading(false)
+                setSelStatus('Processing')
+                setDeliveryDay(1)
 
-            setLoading(false)
+                getOrders()
+    
+            }, 500)
 
-        }, 500)
-
-        /*
-        const [fullName, setFullName] = React.useState('')
-    const [address, setAddress] = React.useState('')
-    const [orderItems, setOrderItems] = React.useState([])
-
-    const [selOrder, setSelOrder] = React.useState('NO-PRODUCT-ID')
-    const [selQuantity, setSelQuantity] = React.useState(1)
-    const [unitPrice, setUnitPrice] = React.useState('---')
-    const [subTotalPrice, setSubTotalPrice] = React.useState('---')
-    */
+        } catch(error) {
+            console.log(error)
+        }
 
     }
 
@@ -175,7 +218,6 @@ export default function Orders() {
                         <CustomTheme>
                             <FormControl fullWidth>
                                 <TextField
-                                //fullWidth
                                 required
                                 label={setCaption('fullname')}
                                 placeholder={setCaption('fullname-placeholder')}
@@ -201,7 +243,6 @@ export default function Orders() {
                         <CustomTheme>
                             <FormControl fullWidth>
                                 <TextField
-                                //fullWidth
                                 required
                                 label={setCaption('shipping-address')}
                                 placeholder={setCaption('shipping-address-placeholder')}
@@ -225,6 +266,43 @@ export default function Orders() {
                             </FormControl>
                         </CustomTheme>
                     </div>
+                    <div className={classes.item}>
+                        <CustomTheme>
+                            <FormControl sx={{mr: 2}}>
+                                <InputLabel id="status-label">{setCaption('status')}</InputLabel>
+                                <Select
+                                labelId="status-label"
+                                label={setCaption('status')}
+                                value={selStatus}
+                                onChange={(e) => setSelStatus(e.target.value)}
+                                >
+                                    <MenuItem value={'Processing'}>Processing</MenuItem>
+                                    <MenuItem value={'For-Delivery'}>For-Delivery</MenuItem>
+                                    <MenuItem value={'Pending'}>Pending</MenuItem>
+                                    <MenuItem value={'Delayed'}>Delayed</MenuItem>
+                                    <MenuItem value={'Cancelled'}>Cancelled</MenuItem>
+                                    <MenuItem value={'Delivered'}>Delivered</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </CustomTheme>
+                        <CustomTheme>
+                            <FormControl>
+                                <InputLabel id="delivery-date-label">{setCaption('delivery-date')}</InputLabel>
+                                <Select
+                                labelId="delivery-date-label"
+                                label={setCaption('delivery-date')}
+                                value={deliveryDay}
+                                onChange={(e) => setDeliveryDay(e.target.value)}
+                                >
+                                    <MenuItem value={1}>1 day</MenuItem>
+                                    <MenuItem value={2}>2 days</MenuItem>
+                                    <MenuItem value={3}>3 days</MenuItem>
+                                    <MenuItem value={4}>4 days</MenuItem>
+                                    <MenuItem value={5}>5 days</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </CustomTheme>
+                    </div>
                     <h4 className={classes.fieldsName}>{setCaption('orders')}</h4>
                     <div className={classes.item}>
                         {
@@ -243,16 +321,12 @@ export default function Orders() {
                         <div className={classes.order}>
                             <div className={classes.orderItem}>
                                 <CustomTheme>
-                                    <FormControl 
-                                    //size="small"
-                                    fullWidth
-                                    >
+                                    <FormControl fullWidth>
                                         <InputLabel id="product-label">{setCaption('product-name')}</InputLabel>
                                         <Select
                                         labelId="product-label"
                                         label={setCaption('product-name')}
                                         value={selOrder}
-                                        //onChange={(e) => setSelOrder(e.target.value)}
                                         onChange={handleSelectOrder}
                                         >
                                             <MenuItem value={'NO-PRODUCT-ID'}>---</MenuItem>
@@ -269,17 +343,13 @@ export default function Orders() {
                             </div>
                             <div className={classes.orderItem2}>
                                 <CustomTheme>
-                                    <FormControl 
-                                    //size="small"
-                                    fullWidth
-                                    >
+                                    <FormControl fullWidth>
                                         <InputLabel id="quantity-label">{setCaption('quantity')}</InputLabel>
                                         <Select
                                         disabled={selOrder === 'NO-PRODUCT-ID'}
                                         labelId="quantity-label"
                                         label={setCaption('quantity')}
                                         value={selQuantity}
-                                        //onChange={(e) => setSelQuantity(e.target.value)}
                                         onChange={handleSelectQuantity}
                                         >
                                             <MenuItem value={1}>1</MenuItem>
@@ -322,10 +392,6 @@ export default function Orders() {
                         onClick={handleAddOrder}
                         >{setCaption('add-order')}</LoadingButton>
                     </CustomTheme>
-                    {
-                        errorMessage &&
-                        <span className={classes.error}>{ errorMessage }</span>
-                    }
                 </div>
             </div>
             <div className={classes.panel} style={{marginTop: '2rem'}}>
@@ -337,13 +403,15 @@ export default function Orders() {
                             <th className={classes.tabHead}>{setCaption('address')}</th>
                             <th className={classes.tabHead}>{setCaption('quantity')}</th>
                             <th className={classes.tabHead}>{setCaption('total-price')}</th>
+                            <th className={classes.tabHead}>{setCaption('delivery-date')}</th>
+                            <th className={classes.tabHead}>{setCaption('status')}</th>
                         </tr>
                     </thead>
                     <tbody className={classes.tabBody}>
                     {
                         orders.length === 0 &&
                         <tr className={classes.tabRow}>
-                            <td colSpan={5} className={`${classes.tabCell} ${classes.center}`} style={{
+                            <td colSpan={7} className={`${classes.tabCell} ${classes.center}`} style={{
                                 padding: '3rem 0'
                             }}>{setCaption('no-orders')}</td>
                         </tr>
@@ -355,9 +423,11 @@ export default function Orders() {
                                 <tr key={item.id} className={classes.tabRow} onClick={() => handleSelectOrderItem(item.id)}>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ item.id }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ item.name }</td>
-                                    <td className={classes.tabCell}>{ `${item.address.substr(0, 18)}...` }</td>
+                                    <td className={classes.tabCell}>{ `${item.address.substr(0, 10)}...` }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ item.quantity }</td>
                                     <td className={`${classes.tabCell} ${classes.right}`}>{ formatPrice(item.total) }</td>
+                                    <td className={`${classes.tabCell} ${classes.center}`}>{ typeof item.deliveryday === 'undefined' ? 1 : item.deliveryday } day</td>
+                                    <td className={`${classes.tabCell} ${classes.center}`}>{ item?.status || 'Processing' }</td>
                                 </tr>
                             )
                         })
@@ -387,6 +457,10 @@ export default function Orders() {
                             </tr>
                             <tr className={classes.tabRow}>
                                 <td className={classes.tabCell} colSpan={5}>{setCaption('shipping-address')}: {selectedOrder.address}</td>
+                            </tr>
+                            <tr className={classes.tabRow}>
+                                <td className={classes.tabCell}>{setCaption('status')}: {selectedOrder?.status || 'Processing'}</td>
+                                <td className={classes.tabCell} colSpan={4}>{setCaption('delivery-date')}: {typeof selectedOrder.deliveryday === 'undefined' ? 1 : selectedOrder.deliveryday} day</td>
                             </tr>
                             {
                                 selectedOrder.items.map((order) => {

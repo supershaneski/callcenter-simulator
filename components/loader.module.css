@@ -30,6 +30,6 @@ borderRadius: '6px',
 
 @media (prefers-color-scheme: dark) {
     .backdrop {
-        background-color: #555;
+        background-color: #333;
     }
 }
