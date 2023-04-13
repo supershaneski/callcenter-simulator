@@ -59,6 +59,16 @@ The application supports Japanese language settings. (日本語対応)
   For this demo, I only save the session data when you close the session.
   But in normal operation, this should be done when the session starts.
 
+## Using Japanese Language Setting
+
+Customer Support in Japanese
+
+![Customer Support](./docs/screenshot10.jpeg "Customer Support")
+
+Session data including analysis written in Japanese
+
+![Session](./docs/screenshot11.jpeg "Session")
+
 
 ## How to Use Settings/Admin Page
 
