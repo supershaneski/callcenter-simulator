@@ -24,6 +24,8 @@ build
 *.bu.css
 *.bu.jsx
 *.bu.js
+*.m4a
+*.mp3
 
 # Editor directories and files
 .vscode/*

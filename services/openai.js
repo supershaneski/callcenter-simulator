@@ -99,10 +99,19 @@ export async function chatCompletion({
 export async function whisper(stream) {
 
     try {
+
+        console.log('whisper service')
         
+        /*
         const resp = await openai.createTranscription(
             stream,
             "whisper-1"
+        )
+        */
+
+        const resp = await openai.createTranscription(
+            stream,
+            'whisper-1',
         )
 
         console.log("whisper", resp)
