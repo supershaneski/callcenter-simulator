@@ -95,3 +95,20 @@ export async function chatCompletion({
         throw error
     }
 }
+
+export async function whisper(stream) {
+
+    try {
+        
+        const resp = await openai.createTranscription(
+            stream,
+            "whisper-1"
+        )
+
+        console.log("whisper", resp)
+
+    } catch(error) {
+        console.log(error)
+        throw error
+    }
+}

@@ -303,11 +303,39 @@ export default function VoiceCall() {
         const key = inquiryType === 1 ? 'order-inquiry' : inquiryType === 2 ? 'product-inquiry' : 'others'
         return setCaption(key)
     }
+
+    const handleTest = async () => {
+        try {
+
+            const response = await fetch('/voice/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    payload: Date.now(),
+                })
+            })
+
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const result = await response.json()
+
+            console.log('test', result)
+
+        } catch(error) {
+            
+            console.log(error)
+
+        }
+    }
     
     return (
         <div className={classes.container}>
             <div className={classes.center}>
-                <div className={classes.banner}>
+                <div className={classes.banner} onClick={handleTest}>
                     <CustomAvatar>
                         <AgentIcon sx={{fontSize: '3.5rem'}} />
                     </CustomAvatar>

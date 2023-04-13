@@ -75,7 +75,30 @@ export default function Sessions() {
 
     const handleSelectSession = (id) => (e) => {
         
-        const s = sessionItems.find((item) => item.id === id)
+        let s = sessionItems.find((item) => item.id === id)
+
+        for(let i = 1; i < s.items.length; i++) {
+            
+            if(s.type !== 'user') {
+                
+                let k = i - 1
+
+                let tokens = s.items[i].contents.split('\n')
+
+                for(let n = 0; n < tokens.length; n++) {
+                    if(tokens[n].indexOf('Customer-Sentiment:') >= 0) {
+                        let token = tokens[n].split(':')
+                        if(token.length > 1) {
+                            let str = token[1].trim()
+                            s.items[k].sentiment = str
+                        }
+                        break
+                    }
+                }
+
+            }
+
+        }
 
         setSession(s)
 
