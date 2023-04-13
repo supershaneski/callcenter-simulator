@@ -280,8 +280,6 @@ export default function Chat() {
 
                 order_data = result_order.output
 
-                console.log('output', order_data)
-
             } catch(error) {
                 console.log(error)
             }
@@ -381,7 +379,6 @@ export default function Chat() {
 
         timerRef.current = setTimeout(() => {
 
-            console.log("scroll")
             messageRef.current.scrollTop = messageRef.current.scrollHeight
 
         }, 100)

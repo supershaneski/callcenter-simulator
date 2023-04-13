@@ -56,8 +56,6 @@ export async function POST(request) {
             system_prompt += `Order-Data: ` + orderData + `\n\n`
         }
 
-        console.log('order-data', orderData)
-        
         let messages = [
             { role: 'system', content: system_prompt },
         ]
@@ -73,6 +71,8 @@ export async function POST(request) {
         console.log(error)
     }
 
+    console.log('chat-text', text)
+    
     return new Response(JSON.stringify({
         text,
     }), {

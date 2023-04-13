@@ -16,7 +16,56 @@ The goal of this project is to test the idea of using AI in callcenter operation
 
 このプロジェクトの目的は、AIをコールセンターのオペレーションに使用するアイデアをテストし、既存のAI製品がすでに人間のエージェントを置き換えることができるかどうかを確認することです。
 
+
+# Application
+
+The application supports Japanese language settings. (日本語対応)
+
 > Please note that this is an ongoing development...
+
+
+## How to Use Customer Support
+
+* **Select Type of Inquiry**
+  
+  Normally, you want to find out what the user wants from the beginning.
+  You can then use this to customize the initial message and the prompt.
+
+
+* **Select Mode**
+
+  For now, you can only use chat support. I will add voice support (using Whisper api) later.
+
+
+* **Chat Interface**
+
+  I added a function wherein I show a button to close session when the AI determined that the session has ended. However, the user can still continue to chat if they want. I made this just to show that automatically detecting when the session ends is possible. Of course, we can also add timer or message count to limit interaction. 
+
+* **Customer Rating**
+  
+  A rating interface for the user is shown when the session is closed.
+  This is used for later evaluation of the session.
+  
+  For this demo, I only save the session data when you close the session.
+  But in normal operation, this should be done when the session starts.
+
+## How to Use Settings/Admin Page
+
+You can access the Settings page by clicking the Settings icon in the landing page.
+
+* **Data Source**
+
+This is where you add the Data Source.
+Check `/assets/product.txt` file for sample format.
+
+* **Sessions**
+  
+You can view all the saved sessions here.
+
+* **Orders**
+
+  This is where you add sample orders that you can use in the chat/voice support.
+  Please note that this is very simple interface and is just used to demonstrate that we can fetch order data on the fly during the conversation.
 
 # Using Local Files and ChatGPT
 
@@ -33,6 +82,7 @@ Basically, we will be using the embedding pattern:
 
 [ Attach the result to prompt for ChatGPT ]
 ```
+
 
 ## Extracting Text Data from Files
 
