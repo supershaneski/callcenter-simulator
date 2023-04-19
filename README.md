@@ -37,7 +37,7 @@ The application supports Japanese language settings. (日本語対応)
 
 * **Select Mode**
 
-  For now, you can only use chat support. I will add voice support (using Whisper api) later.
+Select Voice Call or Chat support
 
 ![Select Mode](./docs/screenshot2.jpeg "Select Mode")
 
