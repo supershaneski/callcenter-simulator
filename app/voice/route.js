@@ -1,115 +1,138 @@
-import { whisper } from '../../services/openai'
+import { embedding, whisper } from '../../services/openai'
 
-//import ffmpeg from 'ffmpeg-static'
-//import { spawn } from 'child_process'
+import { MAX_FILES_LENGTH, COSINE_SIM_THRESHOLD } from '../../lib/utils'
 
 import fs from 'fs'
 import path from 'path'
 
-import axios from 'axios'
-import FormData from 'form-data'
-
 export async function POST(request) {
     
-    console.log('[voice-call]', (new Date()).toLocaleTimeString())
+    const form = await request.formData()
+    const blob = form.get('file')
+    const filename = form.get('name')
+    const files = form.get('files')
+    const inquiry = form.get('inquiry')
+    const lang = form.get('language')
+    
+    const inquiry_type = typeof inquiry !== 'undefined' ? parseInt(inquiry) : 0
+    const language = typeof lang !== 'undefined' ? parseInt(lang) : 0
 
-    /*
-    const file1 = 'file1668651180658.m4a'
-    const file2 = 'file1668651180658.mp3'
+    const buffer = Buffer.from( await blob.arrayBuffer() )
+    
+    let filepath = `${path.join('public', 'uploads', filename)}`
+    
+    fs.writeFileSync(filepath, buffer)
 
-    const filename1 = `${path.join('public', 'uploads', file1)}`
-    const filename2 = `${path.join('/public', 'uploads', file2)}`
-
-    if(fs.existsSync(filename1)) {
-        console.log("filename1", filename1, "exist")
-    }
-
-    console.log(filename1, filename2)
-
-    let result = await new Promise((resolve, reject) => {
-
-        const ffmpegProcess = spawn(ffmpeg, ['-i', filename1, filename2])
-
-        ffmpegProcess.on('error', (err) => {
-            console.error('An error occurred: ' + err.message)
-            reject(err)
-        });
-
-        ffmpegProcess.on('close', (code) => {
-            if (code !== 0) {
-                console.error('FFmpeg process exited with code ' + code)
-                reject('Some error ' + code)
-            } else {
-                console.log('Conversion complete')
-                resolve({
-                    output: 'Successful!',
-                })
-            }
+    const forcedFlag = true // for test
+    if(forcedFlag) {
+        
+        return new Response(JSON.stringify({
+            question: 'Yeah, I want to ask if you have any bathtubs.',
+            text: 'I am sorry, we do not have any bathtubs.',
+        }), {
+            status: 200,
         })
 
-    })
+    }
 
-    console.log('[result]', result)
-    */
+    let question = ''
 
     try {
 
-        const name = 'file1668651180658.mp3' //'file20230413153050.mp3' //'file20230413152612.mp3' //'file167841345035841226.m4a'
-
-        const filename = `${path.join('public', 'uploads', name)}`
-        //const stream = fs.createReadStream(filename)
-
-        //const stats = fs.statSync(filename)
-        //console.log(stats)
-
-        //const resp = await whisper(stream)
-        //console.log('resp', resp)
-
-        let header = {
-            'Content-Type': 'multipart/form-data',
-            //'Accept': 'application/json',
-            'Authorization': `Bearer ${process.env.OPENAI_APIKEY}`
-        }
-    
-        let formData = new FormData()
-        formData.append('file', fs.createReadStream(filename), { filename: name })
-        formData.append('model', 'whisper-1')
-        formData.append('response_format', 'vtt')
-        formData.append('temperature', 0.2)
-        formData.append('language', 'en')
-        
-        const url = 'https://api.openai.com/v1/audio/transcriptions'
-        
-        let result = await new Promise((resolve, reject) => {
-
-            axios.post(url, formData, {
-                headers: {
-                    ...header,
-                }
-            }).then((response) => {
-                
-                resolve({
-                    output: response.data,
-                })
-
-            }).catch((error) => {
-                
-                reject(error) // Maybe rather than sending the whole error message, set some status value
-
-            })
-
+        const result = await whisper({
+            file: buffer,
         })
-        
-        console.log(result)
-        
+
+        question = result.text
 
     } catch(error) {
-        console.log(error)
+        console.log('whisper', error)
     }
 
+    if(question.length === 0) {
+
+        return new Response(JSON.stringify({
+            text: question,
+        }), {
+            status: 200,
+        })
+
+    }
+
+    const maxResults = 10
+
+    let fileChunks = []
+
+    try {
+
+        const searchQueryEmbeddingResponse = await embedding({
+            input: question,
+        })
+
+        const searchQueryEmbedding = searchQueryEmbeddingResponse.length > 0 ? searchQueryEmbeddingResponse[0] : []
+        
+        fileChunks = files.flatMap((file) =>
+            file.chunks
+            ? file.chunks.map((chunk) => {
+                const dotProduct = chunk.embedding.reduce(
+                    (sum, val, i) => sum + val * searchQueryEmbedding[i],
+                    0
+                )
+                return { ...chunk, filename: file.name, score: dotProduct }
+            }) : []
+        ).sort((a, b) => b.score - a.score).filter((chunk) => chunk.score > COSINE_SIM_THRESHOLD).slice(0, maxResults)
+        
+    } catch(error) {
+        console.log('embeddings', error)
+    }
+
+    const filesString = fileChunks
+        .map((fileChunk) => `###\n\"${fileChunk.filename}\"\n${fileChunk.text}`)
+        .join("\n")
+        .slice(0, MAX_FILES_LENGTH)
+
+    let system_prompt = `You are a helpful customer support agent. Try to answer the question from the user using the content of the file extracts below, and if you cannot answer, or find a relevant file, just say so.\n` +
+        `If the answer is not contained in the files or if there are no file extracts, respond that you couldn't find the answer to that question.\n`
+    
+    if(inquiry_type === 1) { // order
+        system_prompt += `The user has selected to inquire about their order.\n` +
+            `If Order-Data exists, use the customer-name to refer to the user in the response to make it more personal.\n`
+    } else if(inquiry_type === 2) {
+        system_prompt += `The user has selected to inquire about a product.\n`
+    }
+
+    if(language > 0) {
+        system_prompt += `Please write the reply in Japanese.\n`
+    }
+
+    system_prompt += `You will also check the user's sentiment and include it in the response.\n` +
+        `The format of your response should be like this:\n\n` +
+        `Customer-Sentiment: neutral\n` +
+        `Response:  thank you for contacting us.\n\n` +
+        `When the customer have concluded the session, append 'SESSION-ENDED' in the last line of your final response.\n\n` +
+        `Files:\n${filesString}\n\n`
+    
+    let text = ''
+
+    try {
+
+        let messages = [
+            { role: 'system', content: system_prompt },
+        ]
+
+        messages.push({ role: 'user', content: question })
+
+        text = await chatCompletion({
+            messages,
+        })
+
+    } catch(error) {
+        console.log('chat', error)
+    }
+    
     return new Response(JSON.stringify({
-        output: 'Lorem ipsum dolor amet',
-        iat: Date.now(),
+        question,
+        text,
     }), {
         status: 200,
     })

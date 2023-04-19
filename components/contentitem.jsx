@@ -9,7 +9,9 @@ import ClearIcon from '@mui/icons-material/Clear'
 import AgentIcon from '@mui/icons-material/SupportAgent'
 
 import CustomTheme from './customtheme'
-import useAppStore from '../stores/appstore'
+//import useAppStore from '../stores/appstore'
+
+import ReactMarkdown from 'react-markdown'
 
 import classes from './contentitem.module.css'
 
@@ -21,11 +23,12 @@ export default function ContentItem({
     onDelete = undefined,
 }) {
 
-    const leftRef = React.useRef()
-    const rightRef = React.useRef()
+    //const leftRef = React.useRef()
+    //const rightRef = React.useRef()
 
     //const isDarkMode = useAppStore((state) => state.darkMode)
 
+    /*
     const handleSelect = () => {
         if(role === 'user') {
 
@@ -44,6 +47,35 @@ export default function ContentItem({
                 .selectAllChildren(leftRef.current)
         }
     }
+    */
+
+    /*
+    <div onClick={handleSelect} className={classes.contentLeft}>
+                        <p ref={leftRef}>
+                        {
+                            content
+                        }
+                        </p>
+                        <div className={classes.delete}>
+                            <IconButton size="small" onClick={onDelete}>
+                                <ClearIcon sx={{ width: 14, height: 14 }} />
+                            </IconButton>
+                        </div>
+                    </div>*/
+
+    /*
+    <div onClick={handleSelect} className={classes.contentRight}>
+                        <p ref={rightRef}>
+                        {
+                            content
+                        }
+                        </p>
+                        <div className={classes.delete}>
+                            <IconButton size="small" onClick={onDelete}>
+                                <ClearIcon sx={{ width: 14, height: 14 }} />
+                            </IconButton>
+                        </div>
+                    </div>*/
 
     return (
         <div className={classes.container} 
@@ -62,12 +94,12 @@ export default function ContentItem({
                             </CustomTheme>
                         </div>
                     </div>
-                    <div onClick={handleSelect} className={classes.contentLeft}>
-                        <p ref={leftRef}>
+                    <div className={classes.contentLeft}>
+                        <ReactMarkdown>
                         {
                             content
                         }
-                        </p>
+                        </ReactMarkdown>
                         <div className={classes.delete}>
                             <IconButton size="small" onClick={onDelete}>
                                 <ClearIcon sx={{ width: 14, height: 14 }} />
@@ -79,8 +111,8 @@ export default function ContentItem({
             {
                 role === 'user' &&
                 <>
-                    <div onClick={handleSelect} className={classes.contentRight}>
-                        <p ref={rightRef}>
+                    <div className={classes.contentRight}>
+                        <p>
                         {
                             content
                         }

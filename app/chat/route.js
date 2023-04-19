@@ -71,8 +71,6 @@ export async function POST(request) {
         console.log(error)
     }
 
-    console.log('chat-text', text)
-    
     return new Response(JSON.stringify({
         text,
     }), {

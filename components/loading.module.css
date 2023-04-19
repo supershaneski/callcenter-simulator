@@ -1,0 +1,36 @@
+.container {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+/*
+borderRadius: '6px', 
+                    padding: '3rem', 
+                    //backgroundColor: '#E6EFFF', 
+                    backgroundColor: 'primary.main',
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center',
+                    boxShadow: 2,*/
+.backdrop {
+    background-color: transparent;
+    border-radius: 6px;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+/*
+@media (prefers-color-scheme: dark) {
+    .backdrop {
+        background-color: #333;
+    }
+}
+*/

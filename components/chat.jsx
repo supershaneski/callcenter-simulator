@@ -281,7 +281,7 @@ export default function Chat() {
                 order_data = result_order.output
 
             } catch(error) {
-                console.log(error)
+                console.log('[command]', error)
             }
 
         }
@@ -304,7 +304,7 @@ export default function Chat() {
 
 
             if(!res.ok) {
-                console.log('Oops, an error occurred.', res.status)
+                console.log('[embeddings]', 'Oops, an error occurred.', res.status)
             }
 
             const result = await res.json()
@@ -326,7 +326,7 @@ export default function Chat() {
             })
 
             if(!response.ok) {
-                console.log('Oops, an error occurred!', response.status)
+                console.log('[chat]', 'Oops, an error occurred!', response.status)
             }
 
             const retval = await response.json()

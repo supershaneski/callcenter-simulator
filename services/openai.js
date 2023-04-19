@@ -96,25 +96,26 @@ export async function chatCompletion({
     }
 }
 
-export async function whisper(stream) {
+export async function whisper({
+    file,
+    model = 'whisper-1',
+    format = 'json',
+    temperature = 0,
+    language = 'en',
+}) {
 
     try {
 
-        console.log('whisper service')
-        
-        /*
         const resp = await openai.createTranscription(
-            stream,
-            "whisper-1"
-        )
-        */
-
-        const resp = await openai.createTranscription(
-            stream,
-            'whisper-1',
+            file,
+            model,
+            '',
+            format,
+            temperature,
+            language,
         )
 
-        console.log("whisper", resp)
+        return resp?.data
 
     } catch(error) {
         console.log(error)

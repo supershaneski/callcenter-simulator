@@ -81,6 +81,9 @@
     -ms-user-select: all;
     user-select: all;
 }
+.contentLeft li {
+    color: #000;
+}
 /*
 .contentLeft:hover .delete {
     display: flex;
