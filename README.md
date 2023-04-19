@@ -42,6 +42,12 @@ Select Voice Call or Chat support
 ![Select Mode](./docs/screenshot2.jpeg "Select Mode")
 
 
+* **Voice Call**
+
+![Voice call](./docs/screenshot12.jpeg "Voice call")
+
+Using [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) to transcribe speech to text and [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) for text to speech operations.
+
 * **Chat Interface**
 
 ![Chat Interface](./docs/screenshot3.jpeg "Chat Interface")
