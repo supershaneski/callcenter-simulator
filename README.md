@@ -44,9 +44,12 @@ Select Voice Call or Chat support
 
 * **Voice Call**
 
+Using [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) to transcribe speech to text and [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) for text to speech operations.
+
 ![Voice call](./docs/screenshot12.jpeg "Voice call")
 
-Using [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) to transcribe speech to text and [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) for text to speech operations.
+Currently, I set recording only after the message from the chatbot has finished being spoken by Speech API.
+This is only for testing the feasibility of using ***real time*** voice call is possible.
 
 * **Chat Interface**
 
