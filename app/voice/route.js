@@ -19,10 +19,11 @@ export async function POST(request) {
 
     const buffer = Buffer.from( await blob.arrayBuffer() )
     
-    let filepath = `${path.join('public', 'uploads', filename)}`
+    //let filepath = `${path.join('public', 'uploads', filename)}`
     
-    fs.writeFileSync(filepath, buffer)
+    //fs.writeFileSync(filepath, buffer)
 
+    /*
     const forcedFlag = true // for test
     if(forcedFlag) {
         
@@ -34,6 +35,7 @@ export async function POST(request) {
         })
 
     }
+    */
 
     let question = ''
 
