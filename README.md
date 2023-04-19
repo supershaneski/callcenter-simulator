@@ -49,7 +49,8 @@ Using [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) to t
 ![Voice call](./docs/screenshot12.jpeg "Voice call")
 
 Currently, I set recording only after the message from the chatbot has finished being spoken by Speech API.
-This is only for testing the feasibility of using ***real time*** voice call is possible.
+This is only for testing the feasibility of using ***real time*** voice call.
+In actual situation, this restriction should be removed.
 
 * **Chat Interface**
 
