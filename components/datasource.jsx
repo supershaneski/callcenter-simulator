@@ -2,6 +2,7 @@
 
 import React from 'react'
 
+import { createPortal } from 'react-dom'
 import { compact } from 'lodash'
 
 import LoadingButton from '@mui/lab/LoadingButton'
@@ -16,6 +17,8 @@ import { getDateTime, MAX_NUM_FILES, MAX_FILE_SIZE_MB } from '../lib/utils'
 
 import useCaption from '../lib/usecaption'
 import captions from '../assets/settings.json'
+
+import LoadingProgress from './loading'
 
 import classes from './datasource.module.css'
 import CustomTheme from './customtheme';
@@ -33,6 +36,7 @@ export default function DataSource() {
     const [errorMessage, setErrorMessage] = React.useState('')
     const [loading, setLoading] = React.useState(false)
     const [selectedFile, setSelectedFile] = React.useState('')
+    const [openLoader, setOpenLoader] = React.useState(true)
 
     React.useEffect(() => {
 
@@ -59,8 +63,14 @@ export default function DataSource() {
 
             setSavedFiles(items)
 
+            setOpenLoader(false)
+
         } catch(error) {
+
             console.log(error)
+
+            setOpenLoader(false)
+
         }
 
     })
@@ -289,6 +299,12 @@ export default function DataSource() {
                         </tbody>
                     </table>
                 </div>
+            }
+            {
+                openLoader && createPortal(
+                    <LoadingProgress />,
+                    document.body,
+                )
             }
         </div>
     )

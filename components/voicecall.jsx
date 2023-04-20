@@ -342,8 +342,7 @@ export default function VoiceCall() {
         }
 
     }, [])
-    ///////////
-
+    
     const handleError = React.useCallback((error) => {
         
         console.log(error)

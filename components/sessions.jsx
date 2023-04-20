@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { createPortal } from 'react-dom'
 
 import IconButton from '@mui/material/IconButton'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -8,6 +9,8 @@ import Rating from '@mui/material/Rating'
 
 import useCaption from '../lib/usecaption'
 import { getDateTime, formatMessage } from '../lib/utils'
+
+import LoadingProgress from './loading'
 
 import CustomTheme from './customtheme'
 import captions from '../assets/settings.json'
@@ -27,6 +30,7 @@ export default function Sessions() {
 
     const [sessionItems, setSessionItems] = React.useState([])
     const [session, setSession] = React.useState(null)
+    const [openLoader, setOpenLoader] = React.useState(true)
 
     React.useEffect(() => {
 
@@ -59,8 +63,14 @@ export default function Sessions() {
             
             setSessionItems(sorted_items)
 
+            setOpenLoader(false)
+
         } catch(error) {
+
             console.log(error)
+
+            setOpenLoader(false)
+
         }
 
     }, [])
@@ -250,6 +260,12 @@ export default function Sessions() {
                         </tbody>
                     </table>
                 </div>
+            }
+            {
+                openLoader && createPortal(
+                    <LoadingProgress />,
+                    document.body,
+                )
             }
         </div>
     )

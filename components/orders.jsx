@@ -2,6 +2,8 @@
 
 import React from 'react'
 
+import { createPortal } from 'react-dom'
+
 import LoadingButton from '@mui/lab/LoadingButton'
 //import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
@@ -30,6 +32,8 @@ import products from '../assets/products.json'
 import captions from '../assets/orders.json'
 import useCaption from '../lib/usecaption'
 
+import LoadingProgress from './loading'
+
 import classes from './orders.module.css'
 
 export default function Orders() {
@@ -51,6 +55,7 @@ export default function Orders() {
 
     const [loading, setLoading] = React.useState(false)
     //const [errorMessage, setErrorMessage] = React.useState('')
+    const [openLoader, setOpenLoader] = React.useState(true)
 
     const [selectedOrder, setSelectedOrder] = React.useState(null)
 
@@ -82,8 +87,14 @@ export default function Orders() {
 
             setOrders(items)
 
+            setOpenLoader(false)
+
         } catch(error) {
+            
             console.log(error)
+
+            setOpenLoader(false)
+
         }
 
     })
@@ -482,6 +493,12 @@ export default function Orders() {
                         </tbody>
                     </table>
                 </div>
+            }
+            {
+                openLoader && createPortal(
+                    <LoadingProgress />,
+                    document.body,
+                )
             }
         </div>
     )
