@@ -21,53 +21,60 @@ The goal of this project is to test the idea of using AI in callcenter operation
 
 The application supports Japanese language settings. (日本語対応)
 
-> Please note that this is an ongoing development...
+For chat messaging, you can always use Japanese or any languages. However, for voice call, you need to set the language setting before using Japanese because I need to set the voice in Speech Synthesis API.
 
 
 ## How to Use Customer Support
 
 
-* **Select Type of Inquiry**
+### **Select Type of Inquiry**
   
-  Normally, you want to find out what the user wants from the beginning.
-  You can then use this to customize the initial message and the prompt.
+Normally, you want to find out what the user wants from the beginning.
+You can then use this to customize the initial message and the prompt.
 
 ![Select Type of Inquiry](./docs/screenshot1.jpeg "Select Type of Inquiry")
 
 
-* **Select Mode**
+### **Select Mode**
 
 Select Voice Call or Chat support
 
 ![Select Mode](./docs/screenshot2.jpeg "Select Mode")
 
 
-* **Voice Call**
+### **Voice Call**
 
 Using [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) to transcribe speech to text and [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) for text to speech operations.
 
 ![Voice call](./docs/screenshot12.jpeg "Voice call")
 
 Currently, I set recording only after the message from the chatbot has finished being spoken by Speech API.
-This is only for testing the feasibility of using ***real time*** voice call.
+This is only for testing the feasibility of using ***real time*** voice call communication and limit using transcription API.
 In actual situation, this restriction should be removed.
 
-* **Chat Interface**
+Voice recording begins only after it detected sound.
+The minimum threshold is controlled by the variable [minDecibels](https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/minDecibels). Please note that the value is in negative. I set loudest possible to -10dB, so set the value lower to prevent throwing exception. The default value is -60dB which makes it sensitive to background noise. Set it to -45dB to trigger recording only with audible speech.
+
+Audio data recording will continue as long as sound is detected. When sound is not detected, the app will wait for 2500 ms before it sends the data to the backend. It is said that in human speech, the minimum interval for sentence is 2 seconds. You can control this by editing `maxPause` variable if you do not want to wait that long.
+
+
+### **Chat Interface**
 
 ![Chat Interface](./docs/screenshot3.jpeg "Chat Interface")
 
-  I added a function wherein I show a button to close session when the AI determined that the session has ended. However, the user can still continue to chat if they want. I made this just to show that automatically detecting when the session ends is possible. Of course, we can also add timer or message count to limit interaction. 
+I added a function wherein I show a button to close session when the AI determined that the session has ended. However, the user can still continue to chat if they want. I made this just to show that automatically detecting when the session ends is possible. Of course, we can also add timer or message count to limit interaction. 
 
 
-* **Customer Rating**
+### **Customer Rating**
 
 ![Customer Rating](./docs/screenshot4.jpeg "Customer Rating")
 
-  A rating interface for the user is shown when the session is closed.
-  This is used for later evaluation of the session.
-  
-  For this demo, I only save the session data when you close the session.
-  But in normal operation, this should be done when the session starts.
+A rating interface for the user is shown when the session is closed.
+This is used for later evaluation of the session.
+
+For this demo, I only save the session data when you close the session.
+But in normal operation, this should be done when the session starts.
+
 
 ## Using Japanese Language Setting
 
@@ -299,72 +306,77 @@ Check `/assets/product.txt` file for sample data source.
 
 # Using MongoDB
 
-I started this project with using just client side storage (e.g. localStorage and indexedDB) but as the development progresses it became clear that I need a backend database.
+I started this project with using just client side storage (e.g. localStorage and indexedDB) but as the development progresses it became clear that I need a database. For this purpose, I will be using MongoDB.
 
-* [MongoDB](https://github.com/mongodb/node-mongodb-native), official MongoDB driver for Node.js.
+First, install [MongoDB Coomunity Edition](https://www.mongodb.com/docs/manual/administration/install-community/). Then run the [MongoDB shell](https://www.mongodb.com/docs/mongodb-shell/) using command line
 
-    ```
-    npm install mongodb
-    ```
+```
+mongodb
+```
 
-    For database, we will be using local MongoDB database.
-    Since the point of this application is not the database, 
-    we will be preparing the database and collections beforehand using [MongoDB Shell](https://www.mongodb.com/docs/mongodb-shell/).
+Then setup the database and test by inserting entry to a collection
 
-    To run the shell
-    ```
-    mongodb
-    ```
+```
+use callcenter
 
-    To add database and collection
-    ```js
-    use callcenter
+db.order.insertOne({id: 'abc123', name: 'John Doe'})
 
-    db.order.insertOne({id: 'abc123', name: 'John Doe'})
+db.order.find()
+```
 
-    db.order.find()
-    ```
+If that is successful, we now install the [MongoDB driver for Node.js](https://github.com/mongodb/node-mongodb-native).
 
-    To connect to MongoDB in route handler
-    ```js
-    import { MongoClient } from 'mongodb'
+In the project directory,
+
+```
+npm install mongodb
+```
+
+To connect to MongoDB in route handler
+
+```js
+import { MongoClient } from 'mongodb'
     
-    const client = new MongoClient(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`)
+const client = new MongoClient(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`)
 
-    export async function POST(request) {
+export async function POST(request) {
 
-        try {
+  try {
 
-            await client.connect()
+    await client.connect()
 
-            const db = client.db()
-            const items = await db.collection('order').find().toArray()
+    const db = client.db()
+    const items = await db.collection('order').find().toArray()
 
-            console.log(items)
+    console.log(items)
 
-        } catch(error) {
-            console.log(error)
-        } finally {
-            await client.close()
-        }
+  } catch(error) {
+    console.log(error)
+  } finally {
+    await client.close()
+  }
 
-        ...
-        
-        return new Response(result, {
-            status: 200,
-        })
+  ...
+  
+  return new Response(result, {
+      status: 200,
+  })
 
-    }
-    ```
+}
+```
 
-    where the environmental variables from `.env`
-    ```
-    DB_HOST=localhost
-    DB_USER=root
-    DB_PASS=
-    DB_NAME=callcenter
-    DB_PORT=27017
-    ```
+where the environmental variables from `.env`
+
+```
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=
+DB_NAME=callcenter
+DB_PORT=27017
+```
+
+Edit the appropriate values according to your own MongoDB setup.
+
 
 # Setup
 
@@ -384,7 +396,10 @@ Copy `.env.example` and rename it to `.env` then edit the `OPENAI_APIKEY` and us
 OPENAI_APIKEY=YOUR_OWN_API_KEY
 ```
 
-You also need to update the variables for the database
+Prepare your MongoDB and create the database.
+
+Then update the variables for the database in the `.env` file.
+
 ```javascript
 DB_HOST=localhost
 DB_USER=root
@@ -392,8 +407,6 @@ DB_PASS=
 DB_NAME=callcenter
 DB_PORT=27017
 ```
-
-Prepare your MongoDB and create the database.
 
 Then run the app
 
