@@ -311,7 +311,7 @@ I started this project with using just client side storage (e.g. localStorage an
 First, install [MongoDB Coomunity Edition](https://www.mongodb.com/docs/manual/administration/install-community/). Then run the [MongoDB shell](https://www.mongodb.com/docs/mongodb-shell/) using command line
 
 ```
-mongodb
+mongo
 ```
 
 Then setup the database and test by inserting entry to a collection
@@ -319,9 +319,9 @@ Then setup the database and test by inserting entry to a collection
 ```
 use callcenter
 
-db.order.insertOne({id: 'abc123', name: 'John Doe'})
+db.orders.insertOne({id: 'abc123', name: 'John Doe'})
 
-db.order.find()
+db.orders.find()
 ```
 
 If that is successful, we now install the [MongoDB driver for Node.js](https://github.com/mongodb/node-mongodb-native).
@@ -396,7 +396,7 @@ Copy `.env.example` and rename it to `.env` then edit the `OPENAI_APIKEY` and us
 OPENAI_APIKEY=YOUR_OWN_API_KEY
 ```
 
-Prepare your MongoDB and create the database.
+Prepare MongoDB and create the database.
 
 Then update the variables for the database in the `.env` file.
 
