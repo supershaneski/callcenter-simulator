@@ -46,6 +46,8 @@ Select Voice Call or Chat support
 
 Using [Whisper API](https://platform.openai.com/docs/guides/speech-to-text) to transcribe speech to text and [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) for text to speech operations.
 
+Please note that you can only use voice call in `localhost` or using `https`.
+
 ![Voice call](./docs/screenshot12.jpeg "Voice call")
 
 Currently, I set recording only after the message from the chatbot has finished being spoken by Speech API.
@@ -281,6 +283,31 @@ We add another step in our pattern above:
 
 [add the result of API endpoint in ChatGPT]
 ```
+
+# Whisper API
+
+At present, you cannot use Safari for voice call function since the generated audio data is causing error for [Whisper API](https://platform.openai.com/docs/guides/speech-to-text).
+
+Whisper API provides separate transcription and translation endpoints. For this app, we just need transcription. We only need to set the language instruction in ChatGPT if we use other than English.
+
+To transcribe an audio data
+
+```javascript
+const { Configuration, OpenAIApi } = require("openai")
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+})
+
+const openai = new OpenAIApi(configuration)
+
+const resp = await openai.createTranscription(
+  fs.createReadStream("audio.mp3"),
+  "whisper-1"
+)
+```
+
+The [documentation](https://platform.openai.com/docs/api-reference/audio/create) list other parameters that we can use.
 
 # Data Source
 
