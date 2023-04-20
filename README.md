@@ -92,7 +92,7 @@ Session data including analysis written in Japanese
 You can access the Settings page by clicking the Settings icon in the landing page.
 
 
-* **Data Source**
+### **Data Source**
 
 This is where you add the Data Source.
 Check `/assets/product.txt` file for sample format.
@@ -100,7 +100,7 @@ Check `/assets/product.txt` file for sample format.
 ![Data Source](./docs/screenshot5.jpeg "Data Source")
 
 
-* **Sessions**
+### **Sessions**
   
 You can view all the saved sessions here.
 
@@ -109,7 +109,7 @@ You can view all the saved sessions here.
 ![Sample Session](./docs/screenshot7.jpeg "Sample Session")
 
 
-* **Orders**
+### **Orders**
 
 ![Orders](./docs/screenshot8.jpeg "Orders")
 
@@ -308,7 +308,7 @@ Check `/assets/product.txt` file for sample data source.
 
 I started this project with using just client side storage (e.g. localStorage and indexedDB) but as the development progresses it became clear that I need a database. For this purpose, I will be using MongoDB.
 
-First, install [MongoDB Coomunity Edition](https://www.mongodb.com/docs/manual/administration/install-community/). Then run the [MongoDB shell](https://www.mongodb.com/docs/mongodb-shell/) using command line
+First, install [MongoDB Community Edition](https://www.mongodb.com/docs/manual/administration/install-community/). Then run the [MongoDB shell](https://www.mongodb.com/docs/mongodb-shell/) using command line
 
 ```
 mongo
