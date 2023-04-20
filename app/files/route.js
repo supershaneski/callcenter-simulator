@@ -53,3 +53,31 @@ export async function POST(request) {
         status: 200,
     })
 }
+
+export async function DELETE(request) {
+
+    const { name } = await request.json()
+
+    try {
+
+        await client.connect()
+        
+        const db = client.db()
+
+        const retval = await db.collection('file').deleteOne({ name: name })
+
+        console.log(retval)
+
+    } catch(error) {
+
+        console.log(error)
+
+    }
+
+    return new Response(JSON.stringify({
+        message: 'Delete successful',
+    }), {
+        status: 200,
+    })
+
+}

@@ -185,14 +185,38 @@ export default function DataSource() {
 
     }
 
-    const handleDelete = (file) => (e) => {
+    const handleDelete = (file) => async (e) => {
 
         e.preventDefault()
         e.stopPropagation()
 
-        // TODO: Delete file
+        try {
 
-        console.log(`Delete File: ${file}`)
+            const response = await fetch('/files/', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: file,
+                })
+            })
+
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
+            }
+
+            const result = await response.json()
+
+            console.log(result)
+
+            getFiles()
+
+        } catch(error) {
+
+            console.log(error)
+
+        }
 
     }
     
