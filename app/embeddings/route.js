@@ -43,8 +43,6 @@ export async function POST(request) {
             }) : []
         ).sort((a, b) => b.score - a.score).filter((chunk) => chunk.score > COSINE_SIM_THRESHOLD).slice(0, maxResults);
         
-        console.log('rankedChunks', typeof rankedChunks, Array.isArray(rankedChunks))
-
         return new Response(JSON.stringify({
             searchResults: rankedChunks,
         }), {

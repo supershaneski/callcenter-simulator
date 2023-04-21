@@ -58,10 +58,11 @@ export default function VoiceCall() {
     const countRef = React.useRef(0)
     const timerCount = React.useRef()
 
-    const encodeType = React.useRef(0)
+    //const encodeType = React.useRef(0)
     const synthRef = React.useRef(null)
     const startRef = React.useRef(false)
     const allowSpeak = React.useRef(false)
+    //const endCall = React.useRef(false)
 
     const [isCountDown, setCountDown] = React.useState(false)
     const [startTime, setStartTime] = React.useState(0)
@@ -88,6 +89,16 @@ export default function VoiceCall() {
 
         if(isMounted) {
 
+            getFiles()
+
+        }
+
+    }, [isMounted])
+
+    React.useEffect(() => {
+
+        if(files.length > 0 && !isCallEnded) {
+
             abortControllerRef.current = new AbortController()
 
             synthRef.current = window.speechSynthesis
@@ -96,8 +107,6 @@ export default function VoiceCall() {
 
                 navigator.mediaDevices.getUserMedia({ audio: true }).then(handleStream).catch(handleError)
                 
-                getFiles()
-
             } else {
         
                 setErrorMessage('Media devices not supported')
@@ -132,7 +141,7 @@ export default function VoiceCall() {
             
         }
 
-    }, [isMounted])
+    }, [files, isCallEnded])
 
     React.useEffect(() => {
 
@@ -303,7 +312,9 @@ export default function VoiceCall() {
             })
 
             if(!response.ok) {
+
                 console.log('Oops, an error occurred', response.status)
+            
             }
 
             const result = await response.json()
@@ -330,7 +341,9 @@ export default function VoiceCall() {
             })
 
             if(!response.ok) {
+
                 console.log('Oops, an error occurred', response.status)
+            
             }
 
             const { items } = await response.json()
@@ -338,7 +351,9 @@ export default function VoiceCall() {
             setFiles(items)
             
         } catch(error) {
+
             console.log(error)
+
         }
 
     }, [])
@@ -353,42 +368,30 @@ export default function VoiceCall() {
 
     const handleStream = (stream) => {
         
-        let errFlag = false
-
         try {
 
             mediaRef.current = new MediaRecorder(stream, {
+                mimeType: 'audio/webm;codecs=opus',
                 audioBitsPerSecond: 128000,
-                mimeType: 'audio/webm',
             })
 
         } catch(error) {
 
             console.log(error)
 
-            errFlag = true
-
-        }
-
-        if(errFlag) {
-            
             mediaRef.current = new MediaRecorder(stream, {
                 audioBitsPerSecond: 128000,
-                //mimeType: 'audio/wave',
-                //mimeType: 'audio/mp4',
             })
-
-            //encodeType.current = 1
 
         }
         
         mediaRef.current.addEventListener('dataavailable', handleData)
         mediaRef.current.addEventListener("stop", handleStop)
 
-        handleAudioData(stream)
-
         setReady(true)
 
+        handleAudioData(stream)
+        
     }
 
     const handleData = (e) => {
@@ -397,57 +400,30 @@ export default function VoiceCall() {
 
     }
 
-    const getFileType = (n) => {
-
-        /**
-         * 2023/04/19
-         * Audio data from Safari cannot be played currently.
-         * Previously, this is working.
-         * 
-         * mimeTypes
-         * 
-         * audio/webm; codecs=opus
-         * audio/ogg; codecs=opus
-         * audio/wave
-         * 
-         */
-
-        return {
-            mimeType: n > 0 ? 'audio/mp4' : 'audio/webm;codecs=opus',
-            fileExt: n > 0 ? 'm4a' : 'webm'
-        }
-    }
-
-    const handleStop = async () => {
+    const handleStop = React.useCallback(async () => {
 
         allowSpeak.current = false // this prevents talking simultaneously
 
+        const blob = new Blob(chunksRef.current, { type: 'audio/webm;codecs=opus' })
+        
         //const duration = (Date.now() - timeStart.current) / 1000
-
-        const fileInfo = getFileType(encodeType.current)
-
-        const mimeType = fileInfo.mimeType
-        const fileExt = fileInfo.fileExt
-
-        const blob = new Blob(chunksRef.current, { type: mimeType })
         //blob.duration = duration
         
-        const name = `file${Date.now()}` + Math.round(Math.random() * 100000) + `.${fileExt}`
+        const name = `file${Date.now()}` + Math.round(Math.random() * 100000) + `.webm`
         
-        const file = new File([blob], name, { type: mimeType })
+        const file = new File([blob], name, { type: 'audio/webm' })
 
         chunksRef.current = []
+
+        let errorFlag = false
+
+        let question = ''
 
         try {
 
             let formData = new FormData()
-            formData.append('file', file, {
-                filename: name,
-                contentType: mimeType,
-            })
+            formData.append('file', file, name)
             formData.append('name', name)
-            formData.append('files', files)
-            formData.append('language', navigator.language.toUpperCase().indexOf('EN') >= 0 ? 0 : 1)
             
             const response = await fetch('/voice/', {
                 method: 'POST',
@@ -459,55 +435,143 @@ export default function VoiceCall() {
             })
 
             if(!response.ok) {
-                console.log('Oops, error occurred', response.status)
+
+                console.log('[whisper]', 'Oops, error occurred', response.status)
+            
             }
 
             const result = await response.json()
 
-            const text = result?.text
-            const question = result?.question
-
-            if(text) {
-
-                const user_message = {
-                    id: getSimpleId(),
-                    type: 'user',
-                    contents: question,
-                    datetime: timeStart.current,
-                }
-
-                const system_message = {
-                    id: getSimpleId(),
-                    type: 'system',
-                    contents: text,
-                    datetime: Date.now(),
-                }
-
-                setMessageItems((prevItems) => [...prevItems, ...[user_message, system_message]])
-
-                const message = formatMessage(text)
-
-                speakText(message, () => {
-
-                    allowSpeak.current = true
-
-                })
-
-            } else {
-                
-                allowSpeak.current = true
-
-            }
+            question = result.text
 
         } catch(error) {
-            
+
             console.log(error)
-            
-            allowSpeak.current = true
+
+            errorFlag = true
 
         }
 
-    }
+        if(errorFlag || question.length === 0) {
+            allowSpeak.current = true
+            return
+        }
+        
+        const user_message = {
+            id: getSimpleId(),
+            type: 'user',
+            contents: question,
+            datetime: timeStart.current,
+        }
+
+        setMessageItems((prevItems) => [...prevItems, ...[user_message]])
+        
+        let results = []
+
+        try {
+
+            const res = await fetch('/embeddings/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    files: files,
+                    question: question,
+                    maxResults: 10,
+                }),
+            })
+
+
+            if(!res.ok) {
+
+                console.log('[embeddings]', 'Oops, an error occurred.', res.status)
+            
+            }
+
+            const result_item = await res.json()
+
+            results = result_item.searchResults
+        
+        } catch(error) {
+
+            console.log(error)
+
+            errorFlag = true
+
+        }
+
+        if(errorFlag || results.length === 0) {
+            allowSpeak.current = true
+            return
+        }
+
+        let text = ''
+
+        const previous = messageItems.map((item) => {
+            return {
+                role: item.type !== 'user' ? 'assistant' : 'user',
+                content: item.contents,
+            }
+        })
+
+        try {
+
+            const response_chat = await fetch('/chat/', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  question: question,
+                  previous: previous,
+                  inquiry: inquiryType,
+                  fileChunks: results,
+                  orderData: '',
+                }),
+            })
+
+            if(!response_chat.ok) {
+
+                console.log('[chat]', 'Oops, an error occurred!', response_chat.status)
+            
+            }
+
+            const retval = await response_chat.json()
+
+            text = retval.text
+
+        } catch(error) {
+
+            console.log(error)
+
+            errorFlag = true
+            
+        }
+
+        if(errorFlag || text.length === 0) {
+            allowSpeak.current = true
+            return
+        }
+
+        const system_message = {
+            id: getSimpleId(),
+            type: 'system',
+            contents: text,
+            datetime: Date.now(),
+        }
+
+        setMessageItems((prevItems) => [...prevItems, ...[system_message]])
+
+        const message = formatMessage(text)
+
+        speakText(message, () => {
+
+            allowSpeak.current = true
+
+        })
+
+    }, [files, messageItems])
 
     const speakText = React.useCallback((txt = '', callback = undefined) => {
         
@@ -533,13 +597,13 @@ export default function VoiceCall() {
 
         utterThis.onstart = () => {
 
-            console.log('Start speak', (new Date()).toLocaleTimeString())
+            console.log('[Start Speak]', (new Date()).toLocaleTimeString())
 
         }
 
         utterThis.onend = () => {
             
-            console.log('End speak', (new Date()).toLocaleTimeString())
+            console.log('[End Speak]', (new Date()).toLocaleTimeString())
             
             if(callback) {
 
@@ -655,6 +719,7 @@ export default function VoiceCall() {
     const handleClose = () => {
 
         setCallEnded(true)
+        //endCall.current = true
 
     }
 
