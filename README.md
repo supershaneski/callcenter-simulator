@@ -23,6 +23,7 @@ The application supports Japanese language settings. (日本語対応)
 
 For chat messaging, you can always use Japanese or any languages. However, for voice call, you need to set the language setting before using Japanese because I need to set the voice in Speech Synthesis API.
 
+[2023-06-14 Update: Use function calling](#function-calling)
 
 ## How to Use Customer Support
 
