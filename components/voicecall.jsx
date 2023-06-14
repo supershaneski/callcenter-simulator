@@ -66,7 +66,7 @@ export default function VoiceCall() {
 
     const [isCountDown, setCountDown] = React.useState(false)
     const [startTime, setStartTime] = React.useState(0)
-    const [displayTime, setDisplayTime] = React.useState('00:00')
+    const [displayTime, setDisplayTime] = React.useState('')
     
     const [isCallEnded, setCallEnded] = React.useState(false)
     const [isRecording, setRecording] = React.useState(false)

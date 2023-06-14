@@ -1,4 +1,4 @@
-import { textCompletion } from '../../services/openai'
+import { chatCompletionFunc } from '../../services/openai'
 
 import { MongoClient } from 'mongodb'
 
@@ -18,32 +18,33 @@ export async function POST(request) {
 
     try {
 
-        let command_prompt = `Check this inquiry if it contains order number/code.\n` + 
-            `If it contains possible order number/code, convert this inquiry to a programmatic command:\n\n` +
-            `Example:\n\n` +
-            `Inquiry: The order number is 1234-5678-90\n` +
-            `Output: find -order-no 1234-5678-90\n\n` +
-            `If there is no order number/code:\n\n` +
-            `Example:\n\n` +
-            `Inquiry: Hello thank you\n` +
-            `Output: NO-COMMAND\n\n` +
-            `Inquiry: ` + question + `\n`
+        const messages = [
+            { role: "user", content: question }
+        ]
 
-        let output_str = await textCompletion({
-            prompt: command_prompt,
-            stop: ['Inquiry:'],
+        const response_test = await chatCompletionFunc({
+            messages, 
+            functions: [
+                {
+                    name: "get_product_order",
+                    description: "Get the order details given the order number",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            orderno: {
+                                type: "string",
+                                description: "The order number, e.g. abc12345, s9001-xaw9287-01"
+                            }
+                        },
+                        required: ["orderno"]
+                    }
+                }
+            ]
         })
 
-        if(output_str.indexOf('NO-COMMAND') < 0) {
-            
-            let tokens = output_str.split('find -order-no')
-            
-            if(tokens.length > 1) {
-
-                customer_order_number = tokens[1].trim()
-
-            }
-
+        if(response_test.hasOwnProperty('function_call')) {
+            const result_test = JSON.parse(response_test.function_call.arguments)
+            customer_order_number = result_test.orderno
         }
 
     } catch(error) {
@@ -99,7 +100,7 @@ export async function POST(request) {
 
     }
 
-    console.log('output', result)
+    //console.log('output', result)
 
     return new Response(JSON.stringify({
         output: result,

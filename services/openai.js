@@ -96,6 +96,31 @@ export async function chatCompletion({
     }
 }
 
+export async function chatCompletionFunc({
+    model = 'gpt-3.5-turbo-0613',
+    messages,
+    functions,
+}) {
+    try {
+
+        const result = await openai.createChatCompletion({
+            messages,
+            model,
+            functions,
+        })
+
+        if (!result.data.choices[0].message) {
+            throw new Error("No return error from chat");
+        }
+
+        return result.data.choices[0].message
+
+    } catch(error) {
+        console.log(error)
+        throw error
+    }
+}
+
 export async function whisper({
     file,
     model = 'whisper-1',
