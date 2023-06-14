@@ -284,6 +284,85 @@ We add another step in our pattern above:
 [add the result of API endpoint in ChatGPT]
 ```
 
+## Function Calling
+
+Today, [OpenAI updated the APIs](https://openai.com/blog/function-calling-and-other-api-updates) and among the update is the addition of `function calling capabilities`. This now makes the part `extracting command from question` as illustrated above simpler.
+
+For example, before, to extract order number from the user inquiry:
+
+```javascript
+let command_prompt = `Check this inquiry if it contains order number/code.\n` + 
+    `If it contains possible order number/code, convert this inquiry to a programmatic command:\n\n` +
+    `Example:\n\n` +
+    `Inquiry: The order number is 1234-5678-90\n` +
+    `Output: find -order-no 1234-5678-90\n\n` +
+    `If there is no order number/code:\n\n` +
+    `Example:\n\n` +
+    `Inquiry: Hello thank you\n` +
+    `Output: NO-COMMAND\n\n` +
+    `Inquiry: ` + question + `\n`
+
+let output_str = await textCompletion({
+    prompt: command_prompt,
+    stop: ['Inquiry:'],
+})
+```
+
+You need to prepare a good prompt and sample output.
+But using the new `function calling`:
+
+```javascript
+const messages = [
+    { role: "user", content: question }
+]
+
+const response_test = await chatCompletionFunc({
+    model: 'gpt-3.5-turbo-0613',
+    messages, 
+    functions: [
+        {
+            name: "get_product_order",
+            description: "Get the order details given the order number",
+            parameters: {
+                type: "object",
+                properties: {
+                    orderno: {
+                        type: "string",
+                        description: "The order number, e.g. abc12345, s9001-xaw9287-01"
+                    }
+                },
+                required: ["orderno"]
+            }
+        }
+    ]
+})
+```
+
+You can easily see how much simpler and cleaner the code becomes.
+The response will look like the following if the result comes with order number or not.
+
+With order number
+
+```javascript
+{
+  role: 'assistant',
+  content: null,
+  function_call: {
+    name: 'get_product_order',
+    arguments: '{\n"orderno": "cba345-027xy-5"\n}'
+  }
+}
+```
+
+Without order number
+
+```javascript
+{
+  role: 'assistant',
+  content: 'Hello Mark! How can I assist you today?'
+}
+```
+
 # Whisper API
 
 At present, you cannot use Safari for voice call function since the generated audio data is causing error for [Whisper API](https://platform.openai.com/docs/guides/speech-to-text).
