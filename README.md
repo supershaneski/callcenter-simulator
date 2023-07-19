@@ -31,7 +31,8 @@ For chat messaging, you can always use Japanese or any languages. However, for v
 ### **Select Type of Inquiry**
   
 Normally, you want to find out what the user wants from the beginning.
-You can then use this to customize the initial message and the prompt.
+This is just used to customize the initial greeting.
+For example, you can inquire about an order even when you select `PRODUCT INQUIRY` or `OTHER INQUIRY`.
 
 ![Select Type of Inquiry](./docs/screenshot1.jpeg "Select Type of Inquiry")
 
@@ -321,20 +322,20 @@ const response_test = await chatCompletionFunc({
     model: 'gpt-3.5-turbo-0613',
     messages, 
     functions: [
-        {
-            name: "get_product_order",
-            description: "Get the order details given the order number",
-            parameters: {
-                type: "object",
-                properties: {
-                    orderno: {
-                        type: "string",
-                        description: "The order number, e.g. abc12345, s9001-xaw9287-01"
-                    }
-                },
-                required: ["orderno"]
+      {
+        name: "extract_order_number",
+        description: "Extract order number or order id from text",
+        parameters: {
+          type: "object",
+          properties: {
+            orderno: {
+              type: "string",
+              description: "Order number or order id, e.g. null, abcde12345"
             }
+          },
+          required: ["orderno"]
         }
+      }
     ]
 })
 ```
@@ -349,7 +350,7 @@ With order number
   role: 'assistant',
   content: null,
   function_call: {
-    name: 'get_product_order',
+    name: 'extract_order_number',
     arguments: '{\n"orderno": "cba345-027xy-5"\n}'
   }
 }
@@ -497,10 +498,10 @@ cd myproject
 npm install
 ```
 
-Copy `.env.example` and rename it to `.env` then edit the `OPENAI_APIKEY` and use your own `OpenAI API key`.
+Copy `.env.example` and rename it to `.env` then edit the `OPENAI_API_KEY` and use your own `OpenAI API key`.
 
 ```javascript
-OPENAI_APIKEY=YOUR_OWN_API_KEY
+OPENAI_API_KEY=YOUR_OWN_API_KEY
 ```
 
 Prepare MongoDB and create the database.
