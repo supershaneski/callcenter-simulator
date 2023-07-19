@@ -230,8 +230,9 @@ export default function Chat() {
 
     }, [messageItems])
     
-    const handleSubmit = async () => {
-        
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
         const previous = messageItems.map((item) => {
             return {
                 role: item.type !== 'user' ? 'assistant' : 'user',
@@ -245,8 +246,10 @@ export default function Chat() {
             contents: inputText,
             datetime: Date.now(),
         }
-
+        
         setInputText('')
+
+        inputRef.current.blur() //
 
         setMessageItems((prevItems) => [...prevItems, ...[user_message]])
 
@@ -256,7 +259,9 @@ export default function Chat() {
 
         let order_data = orderData
 
-        if(!orderData) {
+        console.log('order-data', orderData)
+
+        //if(!orderData) {
 
             try {
 
@@ -276,15 +281,19 @@ export default function Chat() {
 
                 const result_order = await response_order.json()
 
-                setOrderData(result_order.output)
+                if(result_order.output) {
 
-                order_data = result_order.output
+                    setOrderData(result_order.output)
+
+                    order_data = result_order.output
+
+                }
 
             } catch(error) {
                 console.log('[command]', error)
             }
 
-        }
+        //}
 
         try {
 
@@ -459,12 +468,14 @@ export default function Chat() {
                     <CustomTheme>
                         <Box 
                         component="form" 
+                        onSubmit={handleSubmit}
                         noValidate>
                             <TextField 
+                            //autoFocus={true}
                             disabled={loading}
                             fullWidth
-                            multiline
-                            maxRows={6}
+                            //multiline
+                            //maxRows={6}
                             inputRef={inputRef}
                             value={inputText}
                             placeholder={setCaption('write-message')}

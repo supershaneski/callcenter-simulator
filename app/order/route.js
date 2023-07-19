@@ -1,4 +1,4 @@
-import { chatCompletionFunc } from '../../services/openai'
+import { chatCompletion } from '../../services/openai'
 
 import { MongoClient } from 'mongodb'
 
@@ -18,38 +18,49 @@ export async function POST(request) {
 
     try {
 
+        console.log('extract_order_number')
+
         const messages = [
+            { role: "system", content: "When the text contains reference to order number, call extract_order_number function. When there is no order number, respond with <|im_end|>" },
             { role: "user", content: question }
         ]
 
-        const response_test = await chatCompletionFunc({
+        const response_test = await chatCompletion({
+            max_tokens: 24,
             messages, 
             functions: [
                 {
-                    name: "get_product_order",
-                    description: "Get the order details given the order number",
+                    name: "extract_order_number",
+                    description: "Extract order number or order id from text",
                     parameters: {
                         type: "object",
                         properties: {
                             orderno: {
                                 type: "string",
-                                description: "The order number, e.g. abc12345, s9001-xaw9287-01"
+                                description: "Order number or order id, e.g. null, abcde12345"
                             }
                         },
                         required: ["orderno"]
                     }
                 }
-            ]
+            ],
+            //function_call: { name: "extract_order_number" } // force
         })
+
+        console.log('function-call', response_test)
 
         if(response_test.hasOwnProperty('function_call')) {
             const result_test = JSON.parse(response_test.function_call.arguments)
-            customer_order_number = result_test.orderno
+            if(result_test.orderno) { // not null
+                customer_order_number = result_test.orderno
+            }
         }
 
     } catch(error) {
         console.log(error)
     }
+
+    console.log('order-number', customer_order_number)
 
     if(!customer_order_number) {
 
@@ -91,16 +102,18 @@ export async function POST(request) {
             result += `total-price: ¥${total}\n`
 
         }
+
+        console.log('order result', result)
     
     } catch(error) {
+
         console.log(error)
+
     } finally {
         
         await client.close()
 
     }
-
-    //console.log('output', result)
 
     return new Response(JSON.stringify({
         output: result,

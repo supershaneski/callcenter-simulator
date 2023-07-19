@@ -29,9 +29,12 @@ export async function POST(request) {
 
         messages.push({ role: 'user', content: `Customer Rating: ${rate}\n${contents}` })
 
-        text = await chatCompletion({
+        const response = await chatCompletion({
+            temperature: 0.7,
             messages,
         })
+
+        text = response.content
 
     } catch(err) {
         console.log(err)
