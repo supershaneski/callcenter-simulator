@@ -10,7 +10,7 @@ OpenAIの技術、ChatGPT、WhisperなどのAPIを使用して、コールセン
 
 # Motivation
 
-The goal of this project is to test the idea of using AI in callcenter operation and if current existing AI products can already replace human agents.
+The goal of this project is to test the idea of using AI in callcenter operation/customer support service and if current existing AI products can already replace human agents.
 
 ---
 
