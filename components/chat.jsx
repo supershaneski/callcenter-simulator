@@ -49,7 +49,7 @@ export default function Chat() {
 
     const [files, setFiles] = React.useState([])
 
-    //const [orderId, setOrderId] = React.useState('')
+    const [orderId, setOrderId] = React.useState('')
     const [orderData, setOrderData] = React.useState('')
 
     React.useEffect(() => {
@@ -229,9 +229,20 @@ export default function Chat() {
         }
 
     }, [messageItems])
+
+    const formatMessageData = (message, type) => {
+        return {
+            id: getSimpleId(),
+            type,
+            contents: message,
+            datetime: Date.now(),
+        }
+    }
     
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        const message = inputText
 
         const previous = messageItems.map((item) => {
             return {
@@ -239,17 +250,21 @@ export default function Chat() {
                 content: item.contents,
             }
         })
-
+        
+        /*
         const user_message = {
             id: getSimpleId(),
             type: 'user',
             contents: inputText,
             datetime: Date.now(),
         }
+        */
+
+        const user_message = formatMessageData(message, 'user')
         
         setInputText('')
 
-        inputRef.current.blur() //
+        inputRef.current.blur()
 
         setMessageItems((prevItems) => [...prevItems, ...[user_message]])
 
@@ -258,67 +273,75 @@ export default function Chat() {
         scrollToTop()
 
         let order_data = orderData
+        let order_inquiry = false
 
         console.log('order-data', orderData)
 
-        //if(!orderData) {
-
-            try {
-
-                const response_order = await fetch('/order/', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        question: inputText,
-                    }),
-                })
-
-                if (!response_order.ok) {
-                    console.log('[order] Oops, an error occurred', response_order.status)
-                }
-
-                const result_order = await response_order.json()
-
-                if(result_order.output) {
-
-                    setOrderData(result_order.output)
-
-                    order_data = result_order.output
-
-                }
-
-            } catch(error) {
-                console.log('[command]', error)
-            }
-
-        //}
-
         try {
 
-            const formData = JSON.stringify({
-                files: files,
-                question: inputText,
-                maxResults: 10,
-            })
-            
-            const res = await fetch('/embeddings/', {
+            const response_order = await fetch('/order/', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                 },
-                body: formData,
+                body: JSON.stringify({
+                    question: message,
+                }),
             })
 
-
-            if(!res.ok) {
-                console.log('[embeddings]', 'Oops, an error occurred.', res.status)
+            if (!response_order.ok) {
+                console.log('[order] Oops, an error occurred', response_order.status)
             }
 
-            const result = await res.json()
+            const result_order = await response_order.json()
 
-            const results = result.searchResults
+            if(result_order.output) {
+
+                setOrderData(result_order.output)
+
+                order_data = result_order.output
+
+                order_inquiry = true
+
+            }
+
+        } catch(error) {
+            
+            console.log('[order]', error)
+
+        }
+
+        let results = []
+
+        try {
+
+            if(!order_inquiry) {
+
+                console.log("call embeddings...")
+
+                const formData = JSON.stringify({
+                    files: files,
+                    question: message,
+                    maxResults: 10,
+                })
+                
+                const res = await fetch('/embeddings/', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                    body: formData,
+                })
+
+                if(!res.ok) {
+                    console.log('[embeddings]', 'Oops, an error occurred.', res.status)
+                }
+    
+                const result = await res.json()
+    
+                results = result.searchResults
+
+            }
             
             const response = await fetch('/chat/', {
                 method: 'POST',
@@ -326,11 +349,12 @@ export default function Chat() {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                  question: inputText,
+                  question: message,
                   previous,
                   inquiry: inquiryType,
                   fileChunks: results,
                   orderData: order_data,
+                  orderFlag: order_inquiry,
                 }),
             })
 
@@ -345,14 +369,9 @@ export default function Chat() {
                 setSessionEnd(true)
             }
 
-            const system_message = {
-                id: getSimpleId(),
-                type: 'system',
-                contents: retval.text,
-                datetime: Date.now(),
-            }
+            const assistant_message = formatMessageData(retval.text, 'system')
     
-            setMessageItems((prevItems) => [...prevItems, ...[system_message]])
+            setMessageItems((prevItems) => [...prevItems, ...[assistant_message]])
             
             setLoading(false)
 
@@ -366,14 +385,9 @@ export default function Chat() {
 
             console.log(err)
 
-            const system_message = {
-                id: getSimpleId(),
-                type: 'system',
-                contents: setCaption('error-message'), //'Oops, an error occurred',
-                datetime: Date.now(),
-            }
+            const error_message = formatMessageData(setCaption('error-message'), 'system')
     
-            setMessageItems((prevItems) => [...prevItems, ...[system_message]])
+            setMessageItems((prevItems) => [...prevItems, ...[error_message]])
             
             setLoading(false)
 

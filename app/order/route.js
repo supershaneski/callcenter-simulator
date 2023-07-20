@@ -18,10 +18,10 @@ export async function POST(request) {
 
     try {
 
-        console.log('extract_order_number')
+        console.log('function call...')
 
         const messages = [
-            { role: "system", content: "When the text contains reference to order number, call extract_order_number function. When there is no order number, respond with <|im_end|>" },
+            { role: "system", content: "When the text contains reference to order number, call get_order function." },
             { role: "user", content: question }
         ]
 
@@ -30,17 +30,31 @@ export async function POST(request) {
             messages, 
             functions: [
                 {
-                    name: "extract_order_number",
-                    description: "Extract order number or order id from text",
+                    name: "get_order",
+                    description: "Get user order using order number",
                     parameters: {
                         type: "object",
                         properties: {
                             orderno: {
                                 type: "string",
-                                description: "Order number or order id, e.g. null, abcde12345"
+                                description: "Order number, e.g. null, abcde12345"
                             }
                         },
                         required: ["orderno"]
+                    }
+                },
+                {
+                    name: "get_user_inquiry",
+                    description: "Get the user inquiry",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            inquiry: {
+                                type: "string",
+                                description: "User inquiry, e.g. product, delivery, order, discount"
+                            }
+                        },
+                        required: ["inquiry"]
                     }
                 }
             ],
@@ -50,10 +64,13 @@ export async function POST(request) {
         console.log('function-call', response_test)
 
         if(response_test.hasOwnProperty('function_call')) {
+
             const result_test = JSON.parse(response_test.function_call.arguments)
+            
             if(result_test.orderno) { // not null
                 customer_order_number = result_test.orderno
             }
+
         }
 
     } catch(error) {
@@ -116,6 +133,7 @@ export async function POST(request) {
     }
 
     return new Response(JSON.stringify({
+        order_number: customer_order_number,
         output: result,
     }), {
         status: 200,
