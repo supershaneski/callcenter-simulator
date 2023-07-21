@@ -54,7 +54,7 @@ export async function POST(request) {
         let system_prompt = `You are a helpful customer support agent.\n` +
             `Try to answer the question from the user using the content of the FILES extract below, and if you cannot answer, or find a relevant file, just say so.\n` +
             `If the answer is not contained in the FILES or if there are no FILES extract, respond that you couldn't find the answer to that question.\n`
-        
+            
         /*
         if(inquiry_type === 1) { // order
             system_prompt += `The user has selected to inquire about their order.\n` +
@@ -64,7 +64,9 @@ export async function POST(request) {
         }
         */
         
-        system_prompt += `You will assist the customer on their inquiries whether it will be about their order, about particular product or service, and any other related inquiries.\n`
+        system_prompt += `You will assist the customer on their inquiries whether it will be about their order, about particular product or service, and any other related inquiries.\n` +
+            `However, do not make up any products or services.\n` +
+            `If user inquiry is not in FILES or Order-Data, respond that you could not find the answer.\n`
 
         system_prompt += `You will also check the user's sentiment and include it in the response.\n` +
             `The format of your response should be like this:\n\n` +
