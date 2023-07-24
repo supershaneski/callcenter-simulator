@@ -310,7 +310,9 @@ export default function Chat() {
                 setSessionEnd(true)
             }
 
-            addMessageData('system', result.text)
+            const retval = result.text.length > 0 ? result.text : setCaption('error-message')
+
+            addMessageData('system', retval)
 
             setLoading(false)
 
