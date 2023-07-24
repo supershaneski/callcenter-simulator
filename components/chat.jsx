@@ -51,6 +51,7 @@ export default function Chat() {
 
     const [orderId, setOrderId] = React.useState('')
     const [orderData, setOrderData] = React.useState('')
+    const [fileData, setFileData] = React.useState('')
 
     React.useEffect(() => {
 
@@ -238,9 +239,21 @@ export default function Chat() {
             datetime: Date.now(),
         }
     }
-    
+
+    const addMessageData = (role, str) => {
+
+        const new_message = formatMessageData(str, role)
+        
+        setMessageItems((prevItems) => [...prevItems, ...[new_message]])
+
+        scrollToTop()
+
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        console.log('submit...', (new Date()).toLocaleTimeString())
 
         const message = inputText
 
@@ -250,152 +263,73 @@ export default function Chat() {
                 content: item.contents,
             }
         })
-        
-        /*
-        const user_message = {
-            id: getSimpleId(),
-            type: 'user',
-            contents: inputText,
-            datetime: Date.now(),
-        }
-        */
 
-        const user_message = formatMessageData(message, 'user')
-        
+        setLoading(true)
+
+        addMessageData('user', message)
+
         setInputText('')
 
         inputRef.current.blur()
 
-        setMessageItems((prevItems) => [...prevItems, ...[user_message]])
-
-        setLoading(true)
-
-        scrollToTop()
-
-        let order_data = orderData
-        let order_inquiry = false
-
-        console.log('order-data', orderData)
-
         try {
-
-            const response_order = await fetch('/order/', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    question: message,
-                }),
+            
+            const formData = JSON.stringify({
+                files,
+                orderData,
+                fileData,
+                previous,
+                question: message,
             })
 
-            if (!response_order.ok) {
-                console.log('[order] Oops, an error occurred', response_order.status)
-            }
-
-            const result_order = await response_order.json()
-
-            if(result_order.output) {
-
-                setOrderData(result_order.output)
-
-                order_data = result_order.output
-
-                order_inquiry = true
-
-            }
-
-        } catch(error) {
-            
-            console.log('[order]', error)
-
-        }
-
-        let results = []
-
-        try {
-
-            if(!order_inquiry) {
-
-                console.log("call embeddings...")
-
-                const formData = JSON.stringify({
-                    files: files,
-                    question: message,
-                    maxResults: 10,
-                })
-                
-                const res = await fetch('/embeddings/', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                    },
-                    body: formData,
-                })
-
-                if(!res.ok) {
-                    console.log('[embeddings]', 'Oops, an error occurred.', res.status)
-                }
-    
-                const result = await res.json()
-    
-                results = result.searchResults
-
-            }
-            
-            const response = await fetch('/chat/', {
+            const response = await fetch('/chat2/', {
                 method: 'POST',
                 headers: {
-                  'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                  question: message,
-                  previous,
-                  inquiry: inquiryType,
-                  fileChunks: results,
-                  orderData: order_data,
-                  orderFlag: order_inquiry,
-                }),
+                body: formData,
             })
 
             if(!response.ok) {
-                console.log('[chat]', 'Oops, an error occurred!', response.status)
+                console.log('Oops, an error occurred', response.status)
             }
 
-            const retval = await response.json()
+            const result = await response.json()
 
-            const resp = retval.text
-            if(resp.indexOf('SESSION-ENDED') >= 0) {
+            console.log('result', result)
+
+            if(result.hasOwnProperty('orderData')) {
+                setOrderData(result.orderData)
+            }
+
+            if(result.hasOwnProperty('fileData')) {
+                setFileData(result.fileData)
+            }
+
+            if(result.text.indexOf('SESSION-ENDED') >= 0) {
                 setSessionEnd(true)
             }
 
-            const assistant_message = formatMessageData(retval.text, 'system')
-    
-            setMessageItems((prevItems) => [...prevItems, ...[assistant_message]])
-            
-            setLoading(false)
+            addMessageData('system', result.text)
 
-            scrollToTop()
+            setLoading(false)
 
             setTimeout(() => {
                 inputRef.current.focus()
             }, 200)
 
-        } catch(err) {
+        } catch(error) {
 
-            console.log(err)
+            console.log(error)
 
-            const error_message = formatMessageData(setCaption('error-message'), 'system')
-    
-            setMessageItems((prevItems) => [...prevItems, ...[error_message]])
-            
+            addMessageData('system', setCaption('error-message'))
+
             setLoading(false)
 
-            scrollToTop()
         }
 
     }
-
+    
     const scrollToTop = () => {
 
         clearTimeout(timerRef.current)
