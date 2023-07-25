@@ -266,8 +266,10 @@ export default function Chat() {
 
         setLoading(true)
 
-        addMessageData('user', message)
+        //setInputText('')
 
+        addMessageData('user', message)
+        
         try {
             
             const formData = JSON.stringify({
