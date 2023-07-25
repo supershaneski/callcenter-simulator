@@ -2,22 +2,9 @@ import { chatCompletion, embedding } from "../../services/openai"
 
 import { MongoClient } from 'mongodb'
 
-import { COSINE_SIM_THRESHOLD, MAX_FILES_LENGTH } from '../../lib/utils'
+import { COSINE_SIM_THRESHOLD, MAX_FILES_LENGTH, trim_array } from '../../lib/utils'
 
 const client = new MongoClient(`mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`)
-
-const getOrderId = (s) => {
-    const tokens = s.split('\n')
-    let order_id = ''
-    for(let i = 0; i < tokens.length; i++) {
-        if(tokens[i].indexOf('order-id:') >= 0) {
-            let n = tokens[i].indexOf('order-id:')
-            order_id = tokens[i].substr(n + 9).trim()
-            break
-        }
-    }
-    return order_id
-}
 
 const functions = [
     {
@@ -33,6 +20,20 @@ const functions = [
             },
             required: ["orderno"]
         }
+    },
+    {
+        name: "get_user_inquiry",
+        description: "Get the user inquiry",
+        parameters: {
+            type: "object",
+            properties: {
+                inquiry: {
+                    type: "string",
+                    description: "User inquiry, e.g. product, delivery, order, discount"
+                }
+            },
+            required: ["inquiry"]
+        }
     }
 ]
 
@@ -46,6 +47,8 @@ export async function POST(request) {
         })
     }
     
+    let prev_data = trim_array(previous, 20)
+
     let customer_order_number = ''
     let order_data = orderData
     let flag_function_call = false
@@ -53,6 +56,15 @@ export async function POST(request) {
     let result = {}
     let messages = []
     let text = ''
+
+    /*const forced_flag = true
+    if(forced_flag) {
+        return new Response(JSON.stringify({
+            text: 'Lorem ipsum dolor quezo de bola con camote de patola. Mekeni tocino de longaniza bahama mama coco banana.',
+        }), {
+            status: 200,
+        })
+    }*/
 
     // function calling
     try {
@@ -67,36 +79,7 @@ export async function POST(request) {
         result = await chatCompletion({
             max_tokens: 24,
             messages, 
-            functions: [
-                {
-                    name: "get_order",
-                    description: "Get user order using order number",
-                    parameters: {
-                        type: "object",
-                        properties: {
-                            orderno: {
-                                type: "string",
-                                description: "Order number, e.g. null, abcde12345"
-                            }
-                        },
-                        required: ["orderno"]
-                    }
-                },
-                {
-                    name: "get_user_inquiry",
-                    description: "Get the user inquiry",
-                    parameters: {
-                        type: "object",
-                        properties: {
-                            inquiry: {
-                                type: "string",
-                                description: "User inquiry, e.g. product, delivery, order, discount"
-                            }
-                        },
-                        required: ["inquiry"]
-                    }
-                }
-            ],
+            functions,
             // function_call: { name: "extract_order_number" } // force
         })
 
@@ -224,8 +207,8 @@ export async function POST(request) {
         }
 
         messages = [{ role: 'system', content: system_prompt }]
-        if(previous.length > 0) {
-            messages = messages.concat(previous)
+        if(prev_data.length > 0) {
+            messages = messages.concat(prev_data)
         }
         messages.push({ role: 'user', content: question })
         
@@ -233,7 +216,7 @@ export async function POST(request) {
             temperature: 0.7
         }
 
-        console.log('history', previous.length)
+        console.log('history', prev_data.length)
         console.log('files', files_string.length)
         console.log('order-data', order_data.length)
         console.log('order-flag', flag_function_call)
@@ -245,7 +228,7 @@ export async function POST(request) {
 
             options.messages = messages
 
-            options.functions = functions
+            options.functions = [ functions[0] ]
 
         } else {
 

@@ -268,10 +268,6 @@ export default function Chat() {
 
         addMessageData('user', message)
 
-        setInputText('')
-
-        inputRef.current.blur()
-
         try {
             
             const formData = JSON.stringify({
@@ -314,19 +310,23 @@ export default function Chat() {
 
             addMessageData('system', retval)
 
-            setLoading(false)
-
-            setTimeout(() => {
-                inputRef.current.focus()
-            }, 200)
-
         } catch(error) {
 
             console.log(error)
 
             addMessageData('system', setCaption('error-message'))
 
+            
+
+        } finally {
+
+            setInputText('')
+
             setLoading(false)
+
+            setTimeout(() => {
+                inputRef.current.focus()
+            }, 200)
 
         }
 
@@ -435,13 +435,13 @@ export default function Chat() {
                                     <InputAdornment position="end">
                                         <>
                                         <IconButton
-                                        disabled={inputText.length === 0}
+                                        disabled={inputText.length === 0 || loading}
                                         onClick={() => setInputText('')}
                                         >
                                             <ClearIcon />
                                         </IconButton>
                                         <IconButton
-                                        disabled={inputText.length === 0}
+                                        disabled={inputText.length === 0 || loading}
                                         onClick={handleSubmit}
                                         >
                                             <SendIcon />
