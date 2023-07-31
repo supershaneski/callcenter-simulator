@@ -12,6 +12,8 @@
     "greeting-other-1": ["Hello! Thank you for contacting us. How may I assist you with your inquiry?", "こんにちは！ご連絡いただきありがとうございます。何かお力になれることがありますでしょうか？"],
     "greeting-other-2": ["Hi there! How can I help you today?", "こんにちは！何かご質問がありましたら、お気軽にお尋ねください。"],
 
+    "greeting-chat": ["Hello! I'm here to assist you with your order, product, or any other inquiries. How may I be of service?", "こんにちは！注文や製品、その他のお問い合わせにお手伝いいたします。どのようなご質問でしょうか？"],
+
     "error-message": ["Error occurred", "エラーが発生しました"],
 
     "session-end": ["Session has Ended", "セッションが終了しました"],

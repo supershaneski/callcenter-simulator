@@ -430,8 +430,9 @@ export default function Orders() {
                     {
                         orders.length > 0 &&
                         orders.map((item) => {
+                            const classRow = item.id === selectedOrder?.id ? [classes.tabRow, classes.tabRowSelected].join(' ') : classes.tabRow
                             return (
-                                <tr key={item.id} className={classes.tabRow} onClick={() => handleSelectOrderItem(item.id)}>
+                                <tr key={item.id} className={classRow} onClick={() => handleSelectOrderItem(item.id)}>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ item.id }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ item.name }</td>
                                     <td className={classes.tabCell}>{ `${item.address.substr(0, 10)}...` }</td>

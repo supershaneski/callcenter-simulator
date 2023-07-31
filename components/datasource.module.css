@@ -34,8 +34,14 @@
 .table tbody tr {
     cursor: pointer;
 }
+/*
 .table tbody tr.item:hover {
     background-color: rgba(200,255,220, 0.125);
+}
+*/
+
+.itemSelected {
+    background-color: #e6e6ff;
 }
 
 .right {
@@ -80,4 +86,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+    .itemSelected {
+        background-color: #335;
+    }
 }

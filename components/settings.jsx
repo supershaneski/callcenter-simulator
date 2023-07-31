@@ -40,7 +40,7 @@ function TabPanel(props) {
     )
 }
 
-export default function Settings() {
+function Settings() {
 
     useDarkMode()
 
@@ -72,7 +72,7 @@ export default function Settings() {
                     </div>
                     <CustomTheme>
                         <IconButton onClick={handleClose} sx={{mr: 1}}>
-                            <ClearIcon />
+                            <ClearIcon fontSize="small" />
                         </IconButton>
                     </CustomTheme>
                 </div>
@@ -100,3 +100,63 @@ export default function Settings() {
         </div>
     )
 }
+
+function Settings2() {
+    
+    useDarkMode()
+
+    const router = useRouter()
+
+    const setCaption = useCaption(captions)
+
+    const tabSetting = useAppStore((state) => state.tabSettings)
+    const setTabSetting = useAppStore((state) => state.setTabSettings)
+
+    const handleClose = () => {
+        
+        router.push('/')
+
+    }
+
+    return (
+        <div className={classes['settings-container']}>
+            <div className={classes['settings-container']}>
+                <div className={classes['settings-header']}>
+                    <div className={classes['settings-header-left']}>&nbsp;</div>
+                    <div className={classes['settings-header-center']}>
+                        <h1 className={classes['settings-header-title']}>Settings</h1>
+                    </div>
+                    <div className={classes['settings-header-right']}>
+                        <CustomTheme>
+                            <IconButton onClick={handleClose}>
+                                <ClearIcon fontSize="small" />
+                            </IconButton>
+                        </CustomTheme>
+                    </div>
+                </div>
+                <div className={classes['settings-main']}>
+                    <CustomTheme>
+                        <Box sx={{ borderColor: 'divider' }}>
+                            <Tabs value={tabSetting} onChange={(e, v) => setTabSetting(v)}>
+                                <Tab label={setCaption('data-source')} />
+                                <Tab label={setCaption('sessions')} />
+                                <Tab label={setCaption('orders')} />
+                            </Tabs>
+                        </Box>
+                    </CustomTheme>
+                    <TabPanel value={tabSetting} index={0}>
+                        <DataSource />
+                    </TabPanel>
+                    <TabPanel value={tabSetting} index={1}>
+                        <Sessions />
+                    </TabPanel>
+                    <TabPanel value={tabSetting} index={2}>
+                        <Orders />
+                    </TabPanel>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default Settings

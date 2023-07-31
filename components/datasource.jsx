@@ -272,8 +272,10 @@ export default function DataSource() {
 
                             const datetime = getDateTime(file.datetime)
 
+                            const classRow = file.name === selectedFile?.name ? [classes.item, classes.itemSelected].join(' ') : classes.item
+
                             return (
-                                <tr key={ file.name } className={classes.item} onClick={() => handleSelected(file.name)}>
+                                <tr key={ file.name } className={classRow} onClick={() => handleSelected(file.name)}>
                                     <td><span>{ file.name }</span></td>
                                     <td className={classes.center}>{ datetime }</td>
                                     <td className={classes.center}>{ file.type }</td>

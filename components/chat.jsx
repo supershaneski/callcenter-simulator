@@ -120,11 +120,11 @@ export default function Chat() {
 
     const welcomeGreeting = React.useCallback(() => {
         
-        const index = Math.round(10 * Math.random()) > 5 ? 2 : 1
+        //const index = Math.round(10 * Math.random()) > 5 ? 2 : 1
+        //const key = inquiryType === 2 ? 'product' : inquiryType === 1 ? 'order' : 'other'
+        //const greetings = setCaption(`greeting-${key}-${index}`)
 
-        const key = inquiryType === 2 ? 'product' : inquiryType === 1 ? 'order' : 'other'
-
-        const greetings = setCaption(`greeting-${key}-${index}`)
+        const greetings = setCaption('greeting-chat')
 
         setMessageItems([
             { 
@@ -166,38 +166,57 @@ export default function Chat() {
 
         let result = await new Promise(async (resolve, reject) => {
 
-            const response = await fetch('/summary/', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  contents,
-                  rating: rate,
-                  language: navigator.language.toUpperCase().indexOf('EN') >= 0 ? 0 : 1
-                }),
-            })
+            try {
 
-            if(!response.ok) {
-                resolve({
-                    output: ''
+                const response = await fetch('/summary/', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      contents,
+                      rating: rate,
+                      language: navigator.language.toUpperCase().indexOf('EN') >= 0 ? 0 : 1
+                    }),
                 })
+    
+                if(!response.ok) {
+                    resolve({
+                        output: '',
+                        inquiry_type: 0
+                    })
+                }
+    
+                const retval = await response.json()
+    
+                console.log('summary-inquiry-type', retval.inquiry_type)
+    
+                resolve({
+                    output: retval.text,
+                    inquiry_type: retval.inquiry_type
+                })
+
+            } catch(err) {
+                
+                console.log('summary-error', err)
+
+                resolve({
+                    output: '',
+                    inquiry_type: 0,
+                })
+
             }
 
-            const retval = await response.json()
-
-            resolve({
-                output: retval.text
-            })
-
         })
+
+        console.log("promise result", result, (new Date()).toLocaleTimeString())
 
         const sid = getSimpleId()
 
         const session = {
             id: sid,
             datetime: Date.now(),
-            inquiry: inquiryType,
+            inquiry: result.inquiry_type, //inquiryType,
             mode: 0,
             rate,
             items: messageItems,
@@ -253,7 +272,11 @@ export default function Chat() {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
+        if(loading) return
+
         console.log('submit...', (new Date()).toLocaleTimeString())
+
+        setLoading(true)
 
         const message = inputText
 
@@ -263,9 +286,7 @@ export default function Chat() {
                 content: item.contents,
             }
         })
-
-        setLoading(true)
-
+        
         //setInputText('')
 
         addMessageData('user', message)

@@ -25,9 +25,9 @@
     cursor: pointer;
 }
 
-.table tbody tr.tabRow:hover {
+/*.table tbody tr.tabRow:hover {
     background-color: rgba(200,255,220, 0.125);
-}
+}*/
 
 .main {
     border-bottom: 1px solid var(--color-border);
@@ -92,6 +92,13 @@
     width: 100%;
 }
 
+.tabDataContent {
+    white-space: pre-wrap;
+}
+.tabRowSelected {
+    background-color: #e6e6ff;
+}
+
 /*
 @media (prefers-color-scheme: dark) {
 
@@ -106,3 +113,9 @@
 
 }
 */
+
+@media (prefers-color-scheme: dark) {
+    .tabRowSelected {
+        background-color: #335;
+    }
+}

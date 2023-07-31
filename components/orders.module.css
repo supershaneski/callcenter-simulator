@@ -77,8 +77,14 @@
     cursor: pointer;
 }
 
+/*
 .table .tabBody .tabRow:hover {
     background-color: rgba(200,255,220, 0.125);
+}
+*/
+
+.tabRowSelected {
+    background-color: #e6e6ff;
 }
 
 .left {
@@ -104,6 +110,7 @@
     justify-content: flex-end;
     margin-bottom: 1rem;
 }
+
 .close {
     border: 1px solid var(--color-border);
     overflow: hidden;
@@ -112,4 +119,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+@media (prefers-color-scheme: dark) {
+    .tabRowSelected {
+        background-color: #335;
+    }
 }

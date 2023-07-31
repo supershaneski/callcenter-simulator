@@ -138,11 +138,14 @@ export default function Sessions() {
                     {
                         sessionItems.length > 0 &&
                         sessionItems.map((item) => {
+
+                            const classRow = item.id === session?.id ? [classes.tabRow, classes.tabRowSelected].join(' ') : classes.tabRow
+
                             return (
                                 <tr 
                                 key={item.id} 
                                 onClick={handleSelectSession(item.id)}
-                                className={classes.tabRow}
+                                className={classRow}
                                 >
                                     <td className={classes.tabCell}>{ item.id }</td>
                                     <td className={`${classes.tabCell} ${classes.center}`}>{ getDateTime(item.datetime) }</td>
@@ -224,7 +227,7 @@ export default function Sessions() {
                                                                 <td className={classes.tabDataCell} style={{width: '25%', textAlign: 'right'}}>{item?.datetime ? getDateTime(item.datetime) : '---' }</td>
                                                             </tr>
                                                             <tr className={classes.tabDataRow}>
-                                                                <td className={classes.tabDataCell} colSpan={4} style={{paddingTop: '1rem'}}>{txt}</td>
+                                                                <td className={[classes.tabDataCell, classes.tabDataContent].join(' ')} colSpan={4} style={{paddingTop: '1rem'}}>{txt}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -245,7 +248,7 @@ export default function Sessions() {
                                                                 <td className={classes.tabDataCell} style={{width: '25%', textAlign: 'right'}}>{item?.datetime ? getDateTime(item.datetime) : '---' }</td>
                                                             </tr>
                                                             <tr className={classes.tabDataRow}>
-                                                                <td className={classes.tabDataCell} colSpan={4} style={{paddingTop: '1rem'}}>
+                                                                <td className={[classes.tabDataCell, classes.tabDataContent].join(' ')} colSpan={4} style={{paddingTop: '1rem'}}>
                                                                 {item.contents}
                                                                 </td>
                                                             </tr>
