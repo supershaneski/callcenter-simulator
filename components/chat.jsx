@@ -294,7 +294,7 @@ export default function Chat() {
 
             const result = await response.json()
 
-            console.log('result', result)
+            console.log('result', result, (new Date()).toLocaleTimeString())
 
             if(result.hasOwnProperty('orderData')) {
                 setOrderData(result.orderData)

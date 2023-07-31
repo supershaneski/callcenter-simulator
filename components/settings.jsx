@@ -17,6 +17,8 @@ import CustomTheme from './customtheme'
 
 import useDarkMode from '../lib/usedarkmode'
 import useCaption from '../lib/usecaption'
+import useAppStore from '../stores/appstore'
+
 import captions from '../assets/settings.json'
 import classes from './settings.module.css'
 
@@ -46,11 +48,16 @@ export default function Settings() {
 
     const setCaption = useCaption(captions)
 
-    const [value, setValue] = React.useState(0)
+    const tabSetting = useAppStore((state) => state.tabSettings)
+    const setTabSetting = useAppStore((state) => state.setTabSettings)
+
+    //const [value, setValue] = React.useState(0)
     
+    /*
     const handleChange = (val) => {
         setValue(val)
     }
+    */
 
     const handleClose = () => {
         router.push('/')
@@ -72,20 +79,20 @@ export default function Settings() {
                 <div className={classes.inner}>
                     <CustomTheme>
                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                            <Tabs value={value} onChange={(e, v) => handleChange(v)}>
+                            <Tabs value={tabSetting} onChange={(e, v) => setTabSetting(v)}>
                                 <Tab label={setCaption('data-source')} />
                                 <Tab label={setCaption('sessions')} />
                                 <Tab label={setCaption('orders')} />
                             </Tabs>
                         </Box>
                     </CustomTheme>
-                    <TabPanel value={value} index={0}>
+                    <TabPanel value={tabSetting} index={0}>
                         <DataSource />
                     </TabPanel>
-                    <TabPanel value={value} index={1}>
+                    <TabPanel value={tabSetting} index={1}>
                         <Sessions />
                     </TabPanel>
-                    <TabPanel value={value} index={2}>
+                    <TabPanel value={tabSetting} index={2}>
                         <Orders />
                     </TabPanel>
                 </div>

@@ -23,10 +23,12 @@ const useAppStore = create((set) => ({
   inquiryType: 0,
   contactMode: 0,
   sessionId: '',
+  tabSettings: 0,
   setMode: (mode) => set({ darkMode: mode }),
   setInquiry: (inquiry) => set({ inquiryType: inquiry }),
   setContact: (mode) => set({ contactMode: mode }),
   setSession: (sid) => set({ sessionId: sid }),
+  setTabSettings: (tab) => set({ tabSettings: tab }),
   setApp: (inquiry, mode, sid) => set({ inquiryType: inquiry, contactMode: mode, sessionId: sid }),
 }))
 
