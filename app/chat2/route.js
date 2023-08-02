@@ -8,20 +8,6 @@ const client = new MongoClient(`mongodb://${process.env.DB_HOST}:${process.env.D
 
 const functions = [
     {
-        name: "get_order",
-        description: "Get user order using order number",
-        parameters: {
-            type: "object",
-            properties: {
-                orderno: {
-                    type: "string",
-                    description: "Order number, e.g. null, abcde12345"
-                }
-            },
-            required: ["orderno"]
-        }
-    },
-    {
         name: "get_user_inquiry",
         description: "Get the user inquiry",
         parameters: {
@@ -29,10 +15,20 @@ const functions = [
             properties: {
                 inquiry: {
                     type: "string",
-                    description: "User inquiry, e.g. product, delivery, order, discount"
+                    description: "User inquiry, e.g. product, delivery, order, discount",
+                    enum: [ "product", "delivery", "order", "discount", "others" ]
+                },
+                param: {
+                    type: "object",
+                    properties: {
+                        orderno: {
+                            type: "string",
+                            description: "Order number, e.g. null, abcde12345"
+                        }
+                    }
                 }
             },
-            required: ["inquiry"]
+            required: ["inquiry", "param"]
         }
     }
 ]
@@ -57,27 +53,20 @@ export async function POST(request) {
     let messages = []
     let text = ''
 
-    /*const forced_flag = true
-    if(forced_flag) {
-        return new Response(JSON.stringify({
-            text: 'Lorem ipsum dolor quezo de bola con camote de patola. Mekeni tocino de longaniza bahama mama coco banana.',
-        }), {
-            status: 200,
-        })
-    }*/
-
     // function calling
     try {
 
         console.log('function call...')
 
+        const func_system_prompt = `When the text contains reference to order number, call get_order function.\n` +
+            `Otherwise, your response should only be one sentence.`
+
         messages = [
-            { role: "system", content: "When the text contains reference to order number, call get_order function." },
+            { role: "system", content: func_system_prompt },
             { role: "user", content: question }
         ]
 
         result = await chatCompletion({
-            max_tokens: 24,
             messages, 
             functions,
             // function_call: { name: "extract_order_number" } // force
@@ -89,20 +78,45 @@ export async function POST(request) {
 
             const result_obj = JSON.parse(result.function_call.arguments)
             
-            if(result_obj.orderno) { // not null
-                customer_order_number = result_obj.orderno
+            if(result_obj.inquiry === 'order') { // not null
+                if(result_obj.param && result_obj.param.orderno !== 'abcde12345') {
+
+                    console.log('order-no', result_obj.param.orderno)
+
+                    customer_order_number = result_obj.param.orderno
+                }
             }
 
         }
 
     } catch(error) {
-        console.log(error)
+        
+        if(error.response) {
+            console.log(error.response.status)
+            console.log(error.response.data)
+        } else {
+            console.log(error.message)
+        }
+
+    }
+
+    ///// test /////
+    const forced_flag = false
+    if(forced_flag) {
+
+        return new Response(JSON.stringify({
+            text: 'Lorem ipsum dolor quezo de bola con camote de patola. Mekeni tocino de longaniza bahama mama coco banana.',
+        }), {
+            status: 200,
+        })
     }
 
     if(customer_order_number) {
 
         // call database
         try {
+
+            flag_function_call = true
 
             await client.connect()
         
@@ -128,13 +142,17 @@ export async function POST(request) {
                 }
 
                 order_data += `total-price: ¥${total}\n`
+                
+            } else {
 
-                flag_function_call = true
+                order_data = `error order not found.`
 
             }
 
         } catch(error) {
+            
             console.log(error)
+
         }
 
     } else {
@@ -171,7 +189,14 @@ export async function POST(request) {
                     .slice(0, MAX_FILES_LENGTH)
 
             } catch(error) {
-                console.log(error)
+                
+                if(error.response) {
+                    console.log(error.response.status)
+                    console.log(error.response.data)
+                } else {
+                    console.log(error.message)
+                }
+
             }
 
         }
@@ -188,7 +213,7 @@ export async function POST(request) {
         system_prompt += `You will assist the customer on their inquiries whether it will be about their order, about particular product or service, and any other related inquiries.\n` +
             `However, do not make up any products or services.\n` +
             `If user inquiry is not in FILES or Order-Data, respond that you could not find the answer.\n`
-
+        
         system_prompt += `You will also check the user's sentiment and include it in the response.\n` +
             `The format of your response should be like this:\n\n` +
             `Customer-Sentiment: neutral\n` +
@@ -223,6 +248,8 @@ export async function POST(request) {
 
         if(flag_function_call) {
 
+            console.log('function-call-mock-api', order_data)
+
             messages.push({ role: 'assistant', content: null, function_call: { name: 'get_order', arguments: `{\n  "orderno": "${customer_order_number}"\n}` }})
             messages.push({ role: 'function', name: 'get_order', content: JSON.stringify({ order: order_data }) })
 
@@ -243,7 +270,22 @@ export async function POST(request) {
         text = result.content
         
     } catch(error) {
-        console.log(error)
+        
+        if(error.response) {
+            
+            console.log(error.response.status)
+            console.log(error.response.data)
+
+        } else {
+            
+            if(error.message.toLowerCase().indexOf('timeout') >= 0) {
+                text = `Oops! Our servers are experiencing heavy traffic right now.\n` +
+                    `The request is taking longer than expected to process.\n` +
+                    `Please send your inquiry again.\n`
+            }
+
+        }
+
     }
 
     return new Response(JSON.stringify({

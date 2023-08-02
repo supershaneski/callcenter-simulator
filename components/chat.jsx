@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 
 import { useRouter } from 'next/navigation'
 
+import Button from '@mui/material/Button'
 import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
@@ -414,6 +415,21 @@ export default function Chat() {
                             if(item.type !== 'user') {
                                 text = formatMessage(item.contents)
                             }
+                            
+                            /*
+                            <div 
+                            className={classes.suggestedItems}
+                            style={{
+                                display: 'flex',
+                                justifyContent: item.type === 'user' ? 'flex-end' : 'flex-start',
+                                padding: item.type === 'user' ? '10px 30px 0 0' : '10px 0 0 30px'
+                            }}
+                            >
+                                <Button variant='contained' disableElevation>Suggestion 1</Button>
+                                <Button variant='contained' disableElevation>Suggestion 2</Button>
+                                <Button variant='contained' disableElevation>Suggestion 3</Button>
+                            </div>
+                            */
 
                             return (
                                 <div key={item.id} className={classes.contentItem}>

@@ -69,6 +69,7 @@ export async function chatCompletion({
     messages,
     functions,
     function_call = 'auto',
+    timeout = 12000, // don't wait too long
 }) {
 
     let options = { model, max_tokens, temperature, messages }
@@ -87,7 +88,7 @@ export async function chatCompletion({
 
     try {
         
-        const result = await openai.createChatCompletion(options)
+        const result = await openai.createChatCompletion(options, { timeout })
 
         if (!result.data.choices[0].message) {
             throw new Error("No return error from chat");
@@ -97,7 +98,14 @@ export async function chatCompletion({
 
     } catch(error) {
 
-        console.log(error)
+        //console.log(error)
+
+        if(error.response) {
+            console.log("[STATUS-1]", error.response.status)
+            console.log("[DATA-1]", error.response.data)
+        } else {
+            console.log("[MESSAGE-1]", error.message)
+        }
         
         throw error
 
