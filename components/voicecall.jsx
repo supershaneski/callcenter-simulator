@@ -246,12 +246,6 @@ export default function VoiceCall() {
 
     const handleCloseLoader = React.useCallback(async (rate) => {
 
-        const FORCED_FLAG = true
-        if(FORCED_FLAG) {
-            router.push('/')
-            return
-        }
-
         const content_items = messageItems.map((item) => {
 
             const author = item.type !== 'user' ? 'support-agent' : 'customer'
@@ -467,13 +461,6 @@ export default function VoiceCall() {
 
             errorFlag = true
 
-        }
-
-        const FORCED_FLAG = true
-        if(FORCED_FLAG) {
-            console.log('--forced-end--', question)
-            allowSpeak.current = true
-            return
         }
 
         if(errorFlag || question.length === 0) {
