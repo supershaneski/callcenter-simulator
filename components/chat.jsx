@@ -50,7 +50,7 @@ export default function Chat() {
 
     const [files, setFiles] = React.useState([])
 
-    const [orderId, setOrderId] = React.useState('')
+    //const [orderId, setOrderId] = React.useState('')
     const [orderData, setOrderData] = React.useState('')
     const [fileData, setFileData] = React.useState('')
 

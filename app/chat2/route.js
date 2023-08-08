@@ -58,7 +58,7 @@ export async function POST(request) {
 
         console.log('function call...')
 
-        const func_system_prompt = `When the text contains reference to order number, call get_order function.\n` +
+        const func_system_prompt = `When the text contains reference to order number, call get_user_inquiry function and the extract order number.\n` +
             `Otherwise, your response should only be one sentence.`
 
         messages = [

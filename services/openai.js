@@ -115,7 +115,8 @@ export async function chatCompletion({
 export async function whisper({
     file,
     model = 'whisper-1',
-    format = 'json',
+    prompt = '',
+    response_format = 'json',
     temperature = 0,
     language = 'en',
 }) {
@@ -125,8 +126,8 @@ export async function whisper({
         const resp = await openai.createTranscription(
             file,
             model,
-            '',
-            format,
+            prompt,
+            response_format,
             temperature,
             language,
         )

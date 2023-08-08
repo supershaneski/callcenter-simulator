@@ -20,6 +20,8 @@ import useAppStore from '../stores/appstore'
 import useCaption from '../lib/usecaption'
 import captions from '../assets/voicecall.json'
 
+import AnimatedIcon from './animatedIcon'
+
 import Loader from './loader'
 
 import { formatMessage, getTimeDiff, getSimpleId } from '../lib/utils'
@@ -34,8 +36,8 @@ const CustomAvatar = (props) => {
     )
 }
 
-const minDecibels = -60
-const maxPause = 2500
+const minDecibels = -75 //-60
+const maxPause = 4500 //2500
 
 export default function VoiceCall() {
 
@@ -76,8 +78,11 @@ export default function VoiceCall() {
     const [files, setFiles] = React.useState([])
     const [messageItems, setMessageItems] = React.useState([])
     const [isMounted, setMounted] = React.useState(false)
+    const [isSpeaking, setSpeaking] = React.useState(false)
 
     const [openLoader, setOpenLoader] = React.useState(false)
+    const [orderData, setOrderData] = React.useState('')
+    const [fileData, setFileData] = React.useState('')
 
     React.useEffect(() => {
 
@@ -161,6 +166,8 @@ export default function VoiceCall() {
 
             const key = inquiryType === 2 ? 'product' : inquiryType === 1 ? 'order' : 'other'
 
+            //const greetings = setCaption('greeting-chat')
+
             const greetings = setCaption(`greeting-${key}-${index}`)
             
             const system_message = {
@@ -239,6 +246,12 @@ export default function VoiceCall() {
 
     const handleCloseLoader = React.useCallback(async (rate) => {
 
+        const FORCED_FLAG = true
+        if(FORCED_FLAG) {
+            router.push('/')
+            return
+        }
+
         const content_items = messageItems.map((item) => {
 
             const author = item.type !== 'user' ? 'support-agent' : 'customer'
@@ -273,7 +286,8 @@ export default function VoiceCall() {
             if(!response.ok) {
 
                 resolve({
-                    output: ''
+                    output: '',
+                    inquiry_type: 0
                 })
 
             }
@@ -281,17 +295,20 @@ export default function VoiceCall() {
             const retval = await response.json()
 
             resolve({
+                inquiry_type: retval.inquiry_type,
                 output: retval.text
             })
 
         })
+
+        console.log('summary-result', result)
 
         const sid = getSimpleId()
 
         const session = {
             id: sid,
             datetime: Date.now(),
-            inquiry: inquiryType,
+            inquiry: result.inquiry_type ? result.inquiry_type : 0, //inquiryType,
             mode: 0,
             rate,
             items: messageItems,
@@ -428,7 +445,7 @@ export default function VoiceCall() {
             const response = await fetch('/voice/', {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: formData,
                 signal: abortControllerRef.current.signal,
@@ -452,11 +469,18 @@ export default function VoiceCall() {
 
         }
 
+        const FORCED_FLAG = true
+        if(FORCED_FLAG) {
+            console.log('--forced-end--', question)
+            allowSpeak.current = true
+            return
+        }
+
         if(errorFlag || question.length === 0) {
             allowSpeak.current = true
             return
         }
-        
+
         const user_message = {
             id: getSimpleId(),
             type: 'user',
@@ -466,112 +490,82 @@ export default function VoiceCall() {
 
         setMessageItems((prevItems) => [...prevItems, ...[user_message]])
         
-        let results = []
-
         try {
 
-            const res = await fetch('/embeddings/', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    files: files,
-                    question: question,
-                    maxResults: 10,
-                }),
+            console.log('order-data', orderData)
+            console.log('file-data', fileData)
+
+            const previous = messageItems.map((item) => {
+                return {
+                    role: item.type !== 'user' ? 'assistant' : 'user',
+                    content: item.contents,
+                }
             })
 
+            const formData = JSON.stringify({
+                files,
+                orderData,
+                fileData,
+                previous,
+                question,
+            })
 
-            if(!res.ok) {
+            const response = await fetch('/chat2/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: formData,
+            })
 
-                console.log('[embeddings]', 'Oops, an error occurred.', res.status)
-            
+            if(!response.ok) {
+                console.log('Oops, an error occurred', response.status)
             }
 
-            const result_item = await res.json()
+            const result = await response.json()
 
-            results = result_item.searchResults
+            console.log('chat', result)
+
+            if(result.hasOwnProperty('orderData')) {
+                setOrderData(result.orderData)
+            }
+
+            if(result.hasOwnProperty('fileData')) {
+                setFileData(result.fileData)
+            }
+
+            if(result.text) {
+
+                const system_message = {
+                    id: getSimpleId(),
+                    type: 'system',
+                    contents: result.text,
+                    datetime: Date.now(),
+                }
         
-        } catch(error) {
+                setMessageItems((prevItems) => [...prevItems, ...[system_message]])
+        
+                const message = formatMessage(result.text)
+                
+                speakText(message, () => {
+        
+                    allowSpeak.current = true
+        
+                })
 
-            console.log(error)
-
-            errorFlag = true
-
-        }
-
-        if(errorFlag || results.length === 0) {
-            allowSpeak.current = true
-            return
-        }
-
-        let text = ''
-
-        const previous = messageItems.map((item) => {
-            return {
-                role: item.type !== 'user' ? 'assistant' : 'user',
-                content: item.contents,
-            }
-        })
-
-        try {
-
-            const response_chat = await fetch('/chat/', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  question: question,
-                  previous: previous,
-                  inquiry: inquiryType,
-                  fileChunks: results,
-                  orderData: '',
-                }),
-            })
-
-            if(!response_chat.ok) {
-
-                console.log('[chat]', 'Oops, an error occurred!', response_chat.status)
-            
             }
 
-            const retval = await response_chat.json()
-
-            text = retval.text
-
         } catch(error) {
-
+            
             console.log(error)
 
-            errorFlag = true
-            
-        }
-
-        if(errorFlag || text.length === 0) {
-            allowSpeak.current = true
-            return
-        }
-
-        const system_message = {
-            id: getSimpleId(),
-            type: 'system',
-            contents: text,
-            datetime: Date.now(),
-        }
-
-        setMessageItems((prevItems) => [...prevItems, ...[system_message]])
-
-        const message = formatMessage(text)
-
-        speakText(message, () => {
+        } finally {
 
             allowSpeak.current = true
 
-        })
-
-    }, [files, messageItems])
+        }
+        
+    }, [files, messageItems, orderData, fileData])
 
     const speakText = React.useCallback((txt = '', callback = undefined) => {
         
@@ -598,13 +592,15 @@ export default function VoiceCall() {
         utterThis.onstart = () => {
 
             console.log('[Start Speak]', (new Date()).toLocaleTimeString())
+            setSpeaking(true)
 
         }
 
         utterThis.onend = () => {
             
             console.log('[End Speak]', (new Date()).toLocaleTimeString())
-            
+            setSpeaking(false)
+
             if(callback) {
 
                 callback()
@@ -727,14 +723,22 @@ export default function VoiceCall() {
         const key = inquiryType === 1 ? 'order-inquiry' : inquiryType === 2 ? 'product-inquiry' : 'others'
         return setCaption(key)
     }
+
+    /*
+    <CustomAvatar>
+    <AgentIcon sx={{fontSize: '3.5rem'}} />
+    </CustomAvatar>
+    */
     
     return (
         <div className={classes.container}>
             <div className={classes.center}>
                 <div className={classes.banner}>
-                    <CustomAvatar>
-                        <AgentIcon sx={{fontSize: '3.5rem'}} />
-                    </CustomAvatar>
+                    <AnimatedIcon isAnimated={isSpeaking}>
+                        <CustomAvatar>
+                            <AgentIcon sx={{fontSize: '3.5rem'}} />
+                        </CustomAvatar>
+                    </AnimatedIcon>
                 </div>
                 <div className={classes.mode}>
                     <div className={classes.inquiry}>

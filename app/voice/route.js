@@ -22,13 +22,19 @@ export async function POST(request) {
             file: fs.createReadStream(filepath),
         })
 
-        text = result.text
+        if(result) {
+            if(result.hasOwnProperty('text')) { // response_format=json
+                text = result.text
+            }
+        }
 
     } catch(error) {
 
         console.log('whisper', error)
 
     }
+
+    //text = 'Hi, I want to follow up on my order please.'
 
     return new Response(JSON.stringify({
         text,
